@@ -7,8 +7,8 @@ theme:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: "#e59eae"
-      accent: "#e59eae"
+      primary: white
+      accent: cyan
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
@@ -16,8 +16,8 @@ theme:
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: "#e59eae"
-      accent: "#e59eae"
+      primary: deep purple
+      accent: light blue
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
@@ -53,6 +53,3 @@ extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - https://unpkg.com/mermaid/dist/mermaid.min.js 
-  
-extra_css:
-  - stylesheets/extra.css
