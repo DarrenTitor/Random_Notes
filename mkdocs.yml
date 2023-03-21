@@ -17,7 +17,7 @@ theme:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: "#e59eae"
-      accent: blue
+      accent: "#e59eae"
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
@@ -53,3 +53,6 @@ extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - https://unpkg.com/mermaid/dist/mermaid.min.js 
+  
+extra_css:
+  - stylesheets/extra.css
