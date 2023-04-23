@@ -1,0 +1,1592 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../../chap3/chap3/" rel="prev"/>
+<link href="../../chap9/chap9/" rel="next"/>
+<link href="../../../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.4.2, mkdocs-material-9.1.7" name="generator"/>
+<title>8. GRAPHICAL MODELS - Some random ML notes</title>
+<link href="../../../assets/stylesheets/main.ded33207.min.css" rel="stylesheet"/>
+<link href="../../../assets/stylesheets/palette.a0c5b2b5.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="cyan" data-md-color-primary="white" data-md-color-scheme="default" dir="ltr">
+<script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#8-graphical-models">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Some random ML notes" class="md-header__button md-logo" data-md-component="logo" href="../../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Some random ML notes
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              8. GRAPHICAL MODELS
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="white" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="light-blue" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="deep-purple" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+</form>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Some random ML notes" class="md-nav__button md-logo" data-md-component="logo" href="../../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+    Some random ML notes
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../..">
+        Nothing special here
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          MML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+          MML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap1/">
+        chap 1: Introduction and Motivation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap2/">
+        chap2: Linear Algebra
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap3/">
+        chap3 Analytic Geometry
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap4/">
+        chap 4 - Matrix Decompositions
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap5/">
+        chap5 - Vector Calculus
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap6%20-%20Probability%20and%20Distributions/">
+        Probability and Distributions
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          NLP
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+          NLP
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+          Lecture
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+          Lecture
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1_1" id="__nav_3_1_1_label" tabindex="0">
+          HMM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_1_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_3_1_1">
+<span class="md-nav__icon md-icon"></span>
+          HMM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../NLP/Lecture/HMM/HMM/">
+        HMM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          Speech Synthesis
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_2">
+<span class="md-nav__icon md-icon"></span>
+          Speech Synthesis
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../NLP/Speech%20Synthesis/Speech%20Papers/">
+        Speech Papers
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          PGM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+          PGM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          Course
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_1">
+<span class="md-nav__icon md-icon"></span>
+          Course
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture01-Introduction/">
+        lecture01-Introduction
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture02-MRFrepresentation/">
+        lecture02-MRFrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture03-BNrepresentation/">
+        lecture03-BNrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture04-ExactInference/">
+        lecture04-ExactInference
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture05-ParameterEst/">
+        lecture05 ParameterEst
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture06-HMMCRF/">
+        lecture06 HMMCRF
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture07-VI1/">
+        lecture07-VI1
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture08-VI2/">
+        lecture08 VI2
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture09-MC/">
+        lecture09-MC
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture10-MCMC-opt/">
+        lecture10-MCMC-opt
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture11-NN/">
+        lecture11-NN
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture12-DGM1/">
+        lecture12-DGM1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          Pyro
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_2">
+<span class="md-nav__icon md-icon"></span>
+          Pyro
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/pyro/Untitled/">
+        An Introduction to Models in Pyro
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          PRML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+          PRML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          Chap1
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+          Chap1
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap1/chap1/">
+        Chap1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+          Chap10
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+          Chap10
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap10/Pasted%20image%2020210519194435.png/">
+        Pasted image 20210519194435.png
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap10/chap10/">
+        10. Approximate Inference
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          Chap2
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_3">
+<span class="md-nav__icon md-icon"></span>
+          Chap2
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap2/chap2/">
+        Chap2
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+          Chap3
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_4">
+<span class="md-nav__icon md-icon"></span>
+          Chap3
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap3/chap3/">
+        Chap3
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+          Chap8
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_5">
+<span class="md-nav__icon md-icon"></span>
+          Chap8
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          8. GRAPHICAL MODELS
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+        8. GRAPHICAL MODELS
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#81-bayesian-networks">
+    8.1. Bayesian Networks
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#811-example-polynomial-regression">
+    8.1.1 Example: Polynomial regression
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#812-generative-models">
+    8.1.2 Generative models
+  </a>
+<nav aria-label="8.1.2 Generative models" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#813-discrete-variables">
+    8.1.3 Discrete variables
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#814-linear-gaussian-models">
+    8.1.4 Linear-Gaussian models
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#82-conditional-independence">
+    8.2. Conditional Independence
+  </a>
+<nav aria-label="8.2. Conditional Independence" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#821-three-example-graphs">
+    8.2.1 Three example graphs
+  </a>
+<nav aria-label="8.2.1 Three example graphs" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case_1">
+    case_1
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case_2">
+    case_2
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case_3">
+    case_3
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#822-d-separation">
+    8.2.2 D-separation
+  </a>
+<nav aria-label="8.2.2 D-separation" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#markov-blanket-or-markov-boundary">
+    Markov blanket or Markov boundary
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#83-markov-random-fields">
+    8.3. Markov Random Fields
+  </a>
+<nav aria-label="8.3. Markov Random Fields" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#831-conditional-independence-properties">
+    8.3.1 Conditional independence properties
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#832-factorization-properties">
+    8.3.2 Factorization properties
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#834-relation-to-directed-graphs">
+    8.3.4 Relation to directed graphs
+  </a>
+<nav aria-label="8.3.4 Relation to directed graphs" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#directed-undirected">
+    directed -&gt; undirected
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#undirected-directed">
+    undirected -&gt; directed
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#difference">
+    difference
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#84-inference-in-graphical-models">
+    8.4. Inference in Graphical Models
+  </a>
+<nav aria-label="8.4. Inference in Graphical Models" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#841-inference-on-a-chain">
+    8.4.1 Inference on a chain
+  </a>
+<nav aria-label="8.4.1 Inference on a chain" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#passing-of-local-messages">
+    passing of local messages
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#note-observation">
+    Note: observation
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#842-trees">
+    8.4.2 Trees
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#843-factor-graphs">
+    8.4.3 Factor graphs
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#844-the-sum-product-algorithm">
+    8.4.4 The sum-product algorithm
+  </a>
+<nav aria-label="8.4.4 The sum-product algorithm" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#finding-the-marginal-px-for-particular-variable-node-x">
+    finding the marginal p(x) for particular variable node x
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#find-the-marginals-for-every-variable-node">
+    find the marginals for every variable node
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#find-the-marginal-distributions-pmathrmx_s-associated-with-the-sets-of-variables-belonging-to-each-of-the-factors">
+    find the marginal distributions \(p(\mathrm{x_s})\) associated with the sets of variables belonging to each of the factors
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#a-different-view">
+    a different view
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#normalization">
+    normalization
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#example">
+    example
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#observed-variable">
+    observed variable
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#845-the-max-sum-algorithm">
+    8.4.5 The max-sum algorithm
+  </a>
+<nav aria-label="8.4.5 The max-sum algorithm" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#find-the-maximum-of-the-joint-distribution-by-propagating-messages-from-the-leaves-to-an-arbitrarily-chosen-root-node">
+    find the maximum of the joint distribution (by propagating messages from the leaves to an arbitrarily chosen root node)
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#finding-the-configuration-of-the-variables-for-which-the-joint-distribution-attains-this-maximum-value">
+    finding the configuration of the variables for which the joint distribution attains this maximum value
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#observation">
+    observation
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#846-exact-inference-in-general-graphs">
+    8.4.6 Exact inference in general graphs
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#847-loopy-belief-propagation">
+    8.4.7 Loopy belief propagation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#848-learning-the-graph-structure">
+    8.4.8 Learning the graph structure
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+          Chap9
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_6_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_6">
+<span class="md-nav__icon md-icon"></span>
+          Chap9
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap9/chap9/">
+        9. Mixture Models and EM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#81-bayesian-networks">
+    8.1. Bayesian Networks
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#811-example-polynomial-regression">
+    8.1.1 Example: Polynomial regression
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#812-generative-models">
+    8.1.2 Generative models
+  </a>
+<nav aria-label="8.1.2 Generative models" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#813-discrete-variables">
+    8.1.3 Discrete variables
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#814-linear-gaussian-models">
+    8.1.4 Linear-Gaussian models
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#82-conditional-independence">
+    8.2. Conditional Independence
+  </a>
+<nav aria-label="8.2. Conditional Independence" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#821-three-example-graphs">
+    8.2.1 Three example graphs
+  </a>
+<nav aria-label="8.2.1 Three example graphs" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case_1">
+    case_1
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case_2">
+    case_2
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case_3">
+    case_3
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#822-d-separation">
+    8.2.2 D-separation
+  </a>
+<nav aria-label="8.2.2 D-separation" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#markov-blanket-or-markov-boundary">
+    Markov blanket or Markov boundary
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#83-markov-random-fields">
+    8.3. Markov Random Fields
+  </a>
+<nav aria-label="8.3. Markov Random Fields" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#831-conditional-independence-properties">
+    8.3.1 Conditional independence properties
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#832-factorization-properties">
+    8.3.2 Factorization properties
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#834-relation-to-directed-graphs">
+    8.3.4 Relation to directed graphs
+  </a>
+<nav aria-label="8.3.4 Relation to directed graphs" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#directed-undirected">
+    directed -&gt; undirected
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#undirected-directed">
+    undirected -&gt; directed
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#difference">
+    difference
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#84-inference-in-graphical-models">
+    8.4. Inference in Graphical Models
+  </a>
+<nav aria-label="8.4. Inference in Graphical Models" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#841-inference-on-a-chain">
+    8.4.1 Inference on a chain
+  </a>
+<nav aria-label="8.4.1 Inference on a chain" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#passing-of-local-messages">
+    passing of local messages
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#note-observation">
+    Note: observation
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#842-trees">
+    8.4.2 Trees
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#843-factor-graphs">
+    8.4.3 Factor graphs
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#844-the-sum-product-algorithm">
+    8.4.4 The sum-product algorithm
+  </a>
+<nav aria-label="8.4.4 The sum-product algorithm" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#finding-the-marginal-px-for-particular-variable-node-x">
+    finding the marginal p(x) for particular variable node x
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#find-the-marginals-for-every-variable-node">
+    find the marginals for every variable node
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#find-the-marginal-distributions-pmathrmx_s-associated-with-the-sets-of-variables-belonging-to-each-of-the-factors">
+    find the marginal distributions \(p(\mathrm{x_s})\) associated with the sets of variables belonging to each of the factors
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#a-different-view">
+    a different view
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#normalization">
+    normalization
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#example">
+    example
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#observed-variable">
+    observed variable
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#845-the-max-sum-algorithm">
+    8.4.5 The max-sum algorithm
+  </a>
+<nav aria-label="8.4.5 The max-sum algorithm" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#find-the-maximum-of-the-joint-distribution-by-propagating-messages-from-the-leaves-to-an-arbitrarily-chosen-root-node">
+    find the maximum of the joint distribution (by propagating messages from the leaves to an arbitrarily chosen root node)
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#finding-the-configuration-of-the-variables-for-which-the-joint-distribution-attains-this-maximum-value">
+    finding the configuration of the variables for which the joint distribution attains this maximum value
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#observation">
+    observation
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#846-exact-inference-in-general-graphs">
+    8.4.6 Exact inference in general graphs
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#847-loopy-belief-propagation">
+    8.4.7 Loopy belief propagation
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#848-learning-the-graph-structure">
+    8.4.8 Learning the graph structure
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="8-graphical-models">8. GRAPHICAL MODELS<a class="headerlink" href="#8-graphical-models" title="Permanent link">¶</a></h1>
+<p><strong>probabilistic graphical models</strong></p>
+<p>In a probabilistic graphical model, each node represents a random variable (or group of random variables), and the links express probabilistic relationships between these variables.</p>
+<p>有向图：Bayesian networks
+无向图：Markov random fields</p>
+<p>有向图 expressing causal relationships between random variables
+无向图 expressing soft constraints between random variables.</p>
+<p>在solving inference problems时，一般为了计算方便，要把有向图和无向图转化为factor graph</p>
+<h2 id="81-bayesian-networks">8.1. Bayesian Networks<a class="headerlink" href="#81-bayesian-networks" title="Permanent link">¶</a></h2>
+<p>举个例子，任意一个3个随机变量的分布都可以写成这种形式，并画出bayesian network
+<img alt="" src="../Pasted%20image%2020210331200923.png"/>
+<img alt="" src="../Pasted%20image%2020210331200932.png"/></p>
+<p>需要注意，式子的左边是对称的，然而最终画出来的图不对称。展开的顺序不同，最终形成的图也就不一样。</p>
+<p>扩展到K个变量：如果按这样展开，则形成的图是fully connected 
+<img alt="" src="../Pasted%20image%2020210331201204.png"/></p>
+<p>然而，it is the <strong>absence</strong> of links in the graph that conveys interesting information about the properties of the class of distributions that the graph represents</p>
+<p><strong>Each such conditional distribution will be conditioned only on the parents of the corresponding node in the graph. </strong></p>
+<p><img alt="" src="../Pasted%20image%2020210331201540.png"/></p>
+<p>因此，给定一个有向图，我们便能写出对应的joint distribution：
+<img alt="" src="../Pasted%20image%2020210331201828.png"/>
+这体现了the <strong>factorization</strong> properties of the joint distribution for a directed graphical model</p>
+<p>注：这里的图必须no directed cycles，也就是DAG</p>
+<h2 id="811-example-polynomial-regression">8.1.1 Example: Polynomial regression<a class="headerlink" href="#811-example-polynomial-regression" title="Permanent link">¶</a></h2>
+<p>在Polynomial regression中：
+The random variables in this model are the vector of polynomial coefficients <span class="arithmatex">\(\mathrm{w}\)</span> and the observed data <span class="arithmatex">\(t=(t_1,...,t_N)^T\)</span>. 
+In addition, this model contains the input data <span class="arithmatex">\(x =(x_1,...,x_N)^T\)</span>, the noise variance <span class="arithmatex">\(σ^2\)</span>, and the hyperparameter <span class="arithmatex">\(\alpha\)</span> representing the precision of the Gaussian prior over w, all of which are <strong>parameters</strong> of the model rather than random variables.</p>
+<p>这样一来，<span class="arithmatex">\(t\)</span>和<span class="arithmatex">\(\mathrm{w}\)</span>的joint distribution就可以写作：
+<img alt="" src="../Pasted%20image%2020210331203325.png"/>
+<img alt="" src="../Pasted%20image%2020210331203332.png"/></p>
+<p>上图中的N个t结点不方便，We introduce a graphical notation that allows such multiple nodes to be expressed more compactly, in which we draw a single representative node tn and then surround this with a box, called a <strong>plate</strong>, labelled with N indicating that there are N nodes of this kind.
+<img alt="" src="../Pasted%20image%2020210331203540.png"/></p>
+<p>有时我们会把参数也写到表达式中，
+<img alt="" src="../Pasted%20image%2020210331203804.png"/></p>
+<p>而这些参数不是随机变量，不能画成空心圆，random variables will be denoted by open circles, and deterministic parameters will be denoted by smaller solid circles.
+<img alt="" src="../Pasted%20image%2020210331203906.png"/></p>
+<p><strong>In a graphical model, we will denote such observed variables by shading the corresponding nodes</strong>. Thus the graph corresponding to Figure 8.5 in which the variables {tn} are observed is shown in Figure 8.6. Note that the value of w is not observed, and so w is an example of a <strong>latent variable,</strong> also known as a <strong>hidden variable</strong>. Such variables play a crucial role in many probabilistic models and will form the focus of Chapters 9 and 12.</p>
+<p><img alt="" src="../Pasted%20image%2020210331205144.png"/></p>
+<p>（在观测到某些变量之后，我们可以写出<span class="arithmatex">\(\mathrm{w}\)</span>的后验：）
+<img alt="" src="../Pasted%20image%2020210331210806.png"/></p>
+<p>其实参数的后验不重要，重要的是要用模型做出预测。
+记新来的输入为<span class="arithmatex">\(\hat{x}\)</span>, 我们想要找到the corresponding probability distribution of <span class="arithmatex">\(\hat{t}\)</span> conditioned on the observed data</p>
+<p><img alt="" src="../Pasted%20image%2020210331211322.png"/></p>
+<p>and the corresponding joint distribution of all of the random variables in this model, conditioned on the deterministic parameters, is then given by
+<img alt="" src="../Pasted%20image%2020210331211340.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210331212222.png"/></p>
+<h2 id="812-generative-models">8.1.2 Generative models<a class="headerlink" href="#812-generative-models" title="Permanent link">¶</a></h2>
+<p><strong>ancestral sampling</strong></p>
+<p>We shall suppose that the variables have been ordered such that there are no links from any node to any lower numbered node, in other words each node has a higher number than any of its parents. Our goal is to draw a sample <span class="arithmatex">\(\hat{x}_1,...,\hat{x}_K\)</span> from the joint distribution.</p>
+<p><img alt="" src="../Pasted%20image%2020210331213836.png"/>
+Note that at each stage, these parent values will always be available becauce they correspond to lower numbered nodes that have already been sampled</p>
+<p>To obtain a sample from some marginal distribution corresponding to a subset of the variables, we simply take the sampled values for the required nodes and ignore the sampled values for the remaining nodes.
+<img alt="" src="../Pasted%20image%2020210331214236.png"/></p>
+<p><strong>The primary role of the latent variables is to allow a complicated distribution over the observed variables to be represented in terms of a model constructed from simpler (typically exponential family) conditional distributions.</strong></p>
+<hr/>
+<p>Two cases are particularly worthy of note, namely when the parent and child node each correspond to discrete variables and when they each correspond to Gaussian variables, because in these two cases the relationship can be extended hierarchically to construct arbitrarily complex directed acyclic graphs.</p>
+<hr/>
+<p>Discrete <span class="arithmatex">\(\to\)</span> Discrete</p>
+<hr/>
+<p>Gaussian <span class="arithmatex">\(\to\)</span> Gaussian</p>
+<h3 id="813-discrete-variables">8.1.3 Discrete variables<a class="headerlink" href="#813-discrete-variables" title="Permanent link">¶</a></h3>
+<p>单个离散变量的概率分布是这样的
+<img alt="" src="../Pasted%20image%2020210422134343.png"/>
+两个离散变量的分布：（<span class="arithmatex">\(K^2-1\)</span>个参数）
+<img alt="" src="../Pasted%20image%2020210422134718.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210422134856.png"/></p>
+<p>From a graphical perspective, we have reduced the number of parameters by dropping links in the graph, at the expense of having a restricted class of distributions.</p>
+<p>An alternative way to reduce the number of independent parameters in a model is by sharing parameters (also known as tying of parameters).</p>
+<p>Another way of controlling the exponential growth in the number of parameters in models of discrete variables is <strong>to use parameterized models for the conditional distributions</strong> instead of complete tables of conditional probability values.
+<img alt="" src="../Pasted%20image%2020210422145217.png"/>
+<img alt="" src="../Pasted%20image%2020210422145040.png"/>
+The motivation for the logistic sigmoid representation was discussed in Section 4.2.</p>
+<h3 id="814-linear-gaussian-models">8.1.4 Linear-Gaussian models<a class="headerlink" href="#814-linear-gaussian-models" title="Permanent link">¶</a></h3>
+<p>Here we show how a multivariate Gaussian can be expressed as a directed graph corresponding to a linear-Gaussian model over the component variables. </p>
+<p>这里要用到第二章的知识："if two sets of variables are jointly Gaussian, then the conditional distribution of one set conditioned on the other is again Gaussian"</p>
+<hr/>
+<p>这里是反过来用的，如果一个节点是高斯，而它的均值是父节点的线性组合，那么它和父节点的 joint distribution <span class="arithmatex">\(p(\mathrm{x})\)</span> is a multivariate Gaussian.</p>
+<p><img alt="" src="../Pasted%20image%2020210422153148.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210422155145.png"/>
+<img alt="" src="../Pasted%20image%2020210422155232.png"/></p>
+<p>考虑两个极端情况：</p>
+<p>当graph中没有连接时，there are no parameters <span class="arithmatex">\(w_{ij}\)</span> and so there are just D parameters <span class="arithmatex">\(b_i\)</span> and D parameters <span class="arithmatex">\(v_i\)</span>
+此时mean of p(x) is given by (b1,...,bD)T and the covariance matrix is diagonal of the form diag(v1,...,vD).
+结果就是a set of D independent univariate Gaussian distributions</p>
+<p>当graph为全连接时，w的矩阵是一个下三角矩阵，参数个数为D(D−1)/2.
+v所在的协方差矩阵is a general symmetric covariance matrix</p>
+<hr/>
+<p>在下面这个例子中，运用上面的(8.15)和(8.16)，可以写出joint distribution的分布为：
+<img alt="" src="../Pasted%20image%2020210422165831.png"/>
+<img alt="" src="../Pasted%20image%2020210422165841.png"/></p>
+<p>(2.3.6)(Mark, 这段没看)
+Note that we have already encountered a specific example of the linear-Gaussian relationship when we saw that the conjugate prior for the mean µ of a Gaussian
+variable x is itself a Gaussian distribution over µ. The joint distribution over x and µ is therefore Gaussian. This corresponds to a simple two-node graph in which the node representing µ is the parent of the node representing x. The mean of the distribution over µ is a parameter controlling a prior, and so it can be viewed as a hyperparameter. Because the value of this hyperparameter may itself be unknown, we can again treat it from a Bayesian perspective by introducing a prior over the hyperparameter, sometimes called a hyperprior, which is again given by a Gaussian distribution. This type of construction can be extended in principle to any level and is an illustration of a hierarchical Bayesian model, of which we shall encounter further examples in later chapters.</p>
+<h2 id="82-conditional-independence">8.2. Conditional Independence<a class="headerlink" href="#82-conditional-independence" title="Permanent link">¶</a></h2>
+<p>对于变量a, b, c, 如果有
+<img alt="" src="../Pasted%20image%2020210422214122.png"/>
+就称a is conditionally independent of b given c</p>
+<p>当表示joint distribution时，表达式稍有不同，带入上面的式子就行：
+<img alt="" src="../Pasted%20image%2020210422214439.png"/>
+（本质其实是p(a, b)=p(a)p(b)，只不过多了个condition）</p>
+<p>conditional independence 要求上面这两个式子对变量的任意取值都要成立，而不是某些值</p>
+<p>可以简写为：
+<img alt="" src="../Pasted%20image%2020210422214816.png"/></p>
+<p>conditional independence可以从graph中直接读出，不需要任何计算
+The general framework for achieving this is called d-separation, where the ‘d’ stands for ‘directed’</p>
+<h3 id="821-three-example-graphs">8.2.1 Three example graphs<a class="headerlink" href="#821-three-example-graphs" title="Permanent link">¶</a></h3>
+<h4 id="case_1">case_1<a class="headerlink" href="#case_1" title="Permanent link">¶</a></h4>
+<p><img alt="" src="../Pasted%20image%2020210422215337.png"/>
+对于上面的gragh，可以写出下面的分布：
+<img alt="" src="../Pasted%20image%2020210422215532.png"/>
+* 如果没有变量被观测，为了求p(a,b)，我们会marginalizing both sides of (8.23) with respect to c to give
+<img alt="" src="../Pasted%20image%2020210422215618.png"/>
+这个得不出p(a)p(b)，因此得不出conditional independence，可以记作
+<img alt="" src="../Pasted%20image%2020210422215758.png"/></p>
+<ul>
+<li><em>假设c被观测了，或者说we condition on the variable c</em>*，
+由于本身graph都可以写成
+<img alt="" src="../Pasted%20image%2020210422220311.png"/>
+为了求a, b的joint，我们可以直接把上边这个式子同除p(c)
+<img alt="" src="../Pasted%20image%2020210422220012.png"/></li>
+</ul>
+<p>(换句话说，从graph中得不到p(a,b)=p(a)p(b)，但是有p(a,b|c)=p(a|c)p(b|c))</p>
+<p>总结：
+The node c is said to be <strong>tail-to-tail</strong> with respect to this path because the node is connected to the tails of the two arrows,
+<strong>when we condition on node c, the conditioned node ‘blocks’ the path from a to b and causes a and b to become (conditionally) independent.</strong>
+(这里tail-to-tail的这个to就很迷惑，最好记成"and"，tail&amp;tail, head&amp;head, head&amp;tail)</p>
+<h4 id="case_2">case_2<a class="headerlink" href="#case_2" title="Permanent link">¶</a></h4>
+<p><img alt="" src="../Pasted%20image%2020210422221418.png"/>
+同样，先写出
+<img alt="" src="../Pasted%20image%2020210422221848.png"/></p>
+<ul>
+<li>
+<p>当没有condition c时，a，b没有独立
+<img alt="" src="../Pasted%20image%2020210422221959.png"/>
+<img alt="" src="../Pasted%20image%2020210422222014.png"/></p>
+</li>
+<li>
+<p>condition c之后，
+<img alt="" src="../Pasted%20image%2020210422222109.png"/></p>
+</li>
+</ul>
+<p>总结：
+<strong>head-to-tail</strong>
+Such a path connects nodes a and b and renders them dependent. <strong>If we now observe c, then this observation ‘blocks’ the path from a to b and so we obtain the conditional independence property</strong></p>
+<h4 id="case_3">case_3<a class="headerlink" href="#case_3" title="Permanent link">¶</a></h4>
+<p><img alt="" src="../Pasted%20image%2020210422231156.png"/>
+This graph has rather different properties from the two previous examples</p>
+<p>先写出
+<img alt="" src="../Pasted%20image%2020210422231323.png"/></p>
+<ul>
+<li>
+<p>Consider first the case where none of the variables are observed. Marginalizing both sides of (8.28) over c we obtain
+<img alt="" src="../Pasted%20image%2020210422231422.png"/>
+and so <strong>a and b are independent with no variables observed</strong>, in contrast to the two previous examples
+观测前独立
+<img alt="" src="../Pasted%20image%2020210422231534.png"/></p>
+</li>
+<li>
+<p>Now suppose we condition on c,观测之后不独立
+<img alt="" src="../Pasted%20image%2020210422231738.png"/></p>
+</li>
+</ul>
+<p>总结：
+<strong>head-to-head</strong>
+When node c is <strong>unobserved</strong>, it ‘blocks’ the path, and the variables a and b are <strong>independent</strong>. However, <strong>conditioning</strong> on c ‘unblocks’ the path and renders a and b <strong>dependent</strong>.
+另外还有一个结论：<strong>a head-to-head path will become unblocked if either the node, or any ofits descendants, is observed</strong>，也就是说，观测c和观测c的后代可以起到同样的作用</p>
+<h3 id="822-d-separation">8.2.2 D-separation<a class="headerlink" href="#822-d-separation" title="Permanent link">¶</a></h3>
+<p>A, B, C是三个node的集合，没有交集
+<img alt="" src="../Pasted%20image%2020210424142519.png"/></p>
+<p>note：
+parameters用small filled circles表示，理论上相当于observed nodes. However, there are no marginal distributions associated with such nodes.<strong> Consequently they play no role in d-separation.</strong></p>
+<p>We can view a graphical model (in this case a directed graph) as a filter in which a probability distribution p(x) is allowed through the filter if, and only if, it satisfies the directed factorization property (8.5)
+<img alt="" src="../Pasted%20image%2020210424145743.png"/>
+We can alternatively use the graph to filter distributions according to whether they respect all of the conditional independencies implied by the d-separation properties of the graph.
+根据d-separation theorem，上面两种方法得到的结果是一样的</p>
+<h4 id="markov-blanket-or-markov-boundary"><strong>Markov blanket</strong> or <strong>Markov boundary</strong><a class="headerlink" href="#markov-blanket-or-markov-boundary" title="Permanent link">¶</a></h4>
+<p>The set of nodes comprising the parents, the children and the co-parents is called the <strong>Markov blanket</strong>
+<img alt="" src="../Pasted%20image%2020210424151340.png"/></p>
+<p>We can think of the Markov blanket of a node xi as being the minimal set of nodes that isolates xi from the rest of the graph.</p>
+<p>the conditional distribution of xi, conditioned on all the remaining variables in the graph, is dependent only on the variables in the Markov blanket.</p>
+<h2 id="83-markov-random-fields">8.3. Markov Random Fields<a class="headerlink" href="#83-markov-random-fields" title="Permanent link">¶</a></h2>
+<h3 id="831-conditional-independence-properties">8.3.1 Conditional independence properties<a class="headerlink" href="#831-conditional-independence-properties" title="Permanent link">¶</a></h3>
+<p>We might ask whether it is possible to define an alternative graphical semantics for probability distributions such that conditional independence is determined by simple graph separation. This is indeed the case and corresponds to undirected graphical models. 也就是说undirected graph不需要复杂的separation，只需要在graph上直接分割</p>
+<p><strong>If all such paths pass through one or more nodes in set C, then all such paths are ‘blocked’ and so the conditional independence property holds. </strong>
+However, if there is at least one such path that is not blocked, then the property does not necessarily hold, or more precisely there will exist at least some distributions corresponding to the graph that do not satisfy this conditional independence relation. </p>
+<p><img alt="" src="../Pasted%20image%2020210424152954.png"/></p>
+<p><strong>The Markov blanket for an undirected graph</strong> takes a particularly simple form, because a node will be conditionally independent of all other nodes conditioned <strong>only on the neighbouring nodes</strong>
+<img alt="" src="../Pasted%20image%2020210424153232.png"/></p>
+<h3 id="832-factorization-properties">8.3.2 Factorization properties<a class="headerlink" href="#832-factorization-properties" title="Permanent link">¶</a></h3>
+<p>我们想expressing the joint distribution p(x) as a product of functions defined over sets of variables that are local to the graph.</p>
+<p>If we consider two nodes xi and xj that are not connected by a link, then these variables must be conditionally independent given all other nodes in the graph.
+也就是说相邻节点一定相关，也就拆不开了，写不成乘积形式
+<img alt="" src="../Pasted%20image%2020210424154351.png"/></p>
+<p>clique：the set of nodes in a clique is fully connected</p>
+<p><img alt="" src="../Pasted%20image%2020210424160241.png"/>
+这里提到了两个函数，potential functions和partition function，partition function只是用于normalization的</p>
+<p><strong> Note that we do not restrict the choice of potential functions to those that have a specific probabilistic interpretation as marginal or conditional distributions. </strong>
+与有向图不同，有向图中，p(x)拆成许多条件概率的乘积
+在无向图中，不要求potential functions必须是marginal or conditional distributions</p>
+<p>The presence of this normalization constant is one of the major limitations of undirected graphs.
+If we have a model with M discrete nodes each having K states, 则partition function是<span class="arithmatex">\(K^M\)</span>项求和</p>
+<p>如果我们想要得到connection between conditional independence and factorization for undirected graphs，就要约束<span class="arithmatex">\(\Psi_C(x_C)\)</span> are strictly positive</p>
+<p>由于potential functions严格大于0，因此可以写成指数的形式
+<img alt="" src="../Pasted%20image%2020210424162826.png"/>
+where E(xC) is called an <strong>energy function</strong>, and the exponential representation is called the <strong>Boltzmann distribution</strong>
+The joint distribution是potential的乘积，so the total energy is obtained by adding the energies of each of the maximal cliques.</p>
+<h3 id="834-relation-to-directed-graphs">8.3.4 Relation to directed graphs<a class="headerlink" href="#834-relation-to-directed-graphs" title="Permanent link">¶</a></h3>
+<h4 id="directed-undirected">directed -&gt; undirected<a class="headerlink" href="#directed-undirected" title="Permanent link">¶</a></h4>
+<p>先考虑最简单的directed chain，在chain中，maximal cliques are simply the pairs of neighbouring nodes
+让这两个式子对应
+<img alt="" src="../Pasted%20image%2020210426195618.png"/>
+<img alt="" src="../Pasted%20image%2020210426195625.png"/>
+就有
+<img alt="" src="../Pasted%20image%2020210426195654.png"/></p>
+<p>下面考虑general的情况：
+要想转化，就要用clique的potential表示conditional distributions。
+In order for this to be valid, <strong>we must ensure that the set of variables that appears in each of the conditional distributions is a member of at least one clique of the undirected graph</strong> 也就是说，要想达成这个，有向图中的每个节点，都要至少出现在某一个minimal clique中，不然就会把这个节点漏掉</p>
+<p>如果有向图中的子节点只有一个parent，那么只需要把箭头直接变成edge，然后把node pair视为minimal clique
+但是当一个子节点有多个parent时，也就是"head to head"时，不能直接转化。To ensure this, we add extra links between all pairs of parents of the node
+Anachronistically, this process of ‘marrying the parents’ has become known as <strong>moralization</strong>,
+and the resulting undirected graph, after dropping the arrows, is called the <strong>moral graph</strong>
+需要注意的是，在moralization的过程中，哟可能会丢到conditiona independence，比如下面这个例子：
+<img alt="" src="../Pasted%20image%2020210426201511.png"/></p>
+<p>Steps:
+1. add additional undirected links between all pairs of parents for each node in the graph and then drop the arrows on the original links to give the moral graph
+2. initialize all of the clique potentials of the moral graph to 1
+3. take each conditional distribution factor in the original directed graph and multiply it into one of the clique potentials
+4. in all cases the partition function is given by Z=1</p>
+<h4 id="undirected-directed">undirected -&gt; directed<a class="headerlink" href="#undirected-directed" title="Permanent link">¶</a></h4>
+<p>Converting from an undirected to a directed representation is much less common and in general presents problems due to the normalization constraints</p>
+<h4 id="difference">difference<a class="headerlink" href="#difference" title="Permanent link">¶</a></h4>
+<p>It turns out that the two types of graph can <strong>express different conditional independence properties</strong></p>
+<h2 id="84-inference-in-graphical-models">8.4. Inference in Graphical Models<a class="headerlink" href="#84-inference-in-graphical-models" title="Permanent link">¶</a></h2>
+<h3 id="841-inference-on-a-chain">8.4.1 Inference on a chain<a class="headerlink" href="#841-inference-on-a-chain" title="Permanent link">¶</a></h3>
+<p>我们这里只需要讨论无向图。因为有向图可以直接转化为无向图。We have
+already seen that the directed chain can be transformed into an equivalent undirected chain. Because the directed graph does not have any nodes with more than one parent, this does not require the addition of any extra links, and the directed and undirected versions of this graph express exactly the same set of conditional independence statements.</p>
+<p><img alt="" src="../Pasted%20image%2020210426121756.png"/></p>
+<p>上边的chain可以写成下面的potential，同时我们假设变量都是离散的，每个变量有K个状态
+<img alt="" src="../Pasted%20image%2020210426121959.png"/></p>
+<p>Let us consider the inference problem of <strong>finding the marginal distribution <span class="arithmatex">\(p(x_n)\)</span></strong> for a specific node <span class="arithmatex">\(x_n\)</span> that is part way along the chain.</p>
+<p>为了避免指数级的求和运算， exploiting the conditional independence properties of the graphical model</p>
+<p>思想：
+把<img alt="" src="../Pasted%20image%2020210426122616.png"/>代入<img alt="" src="../Pasted%20image%2020210426122630.png"/>，然后观察</p>
+<p>先看the summation over<span class="arithmatex">\(x_N\)</span>, 我们知道<span class="arithmatex">\(x_N\)</span>只与<span class="arithmatex">\(x_{N-1}\)</span>相关，因此我们可以通过<span class="arithmatex">\(x_N\)</span>与<span class="arithmatex">\(x_{N-1}\)</span>的potential得到二者的joint，再在<span class="arithmatex">\(x_N\)</span>上求和，就能得到<span class="arithmatex">\(x_{N-1}\)</span>的分布
+<img alt="" src="../Pasted%20image%2020210426122948.png"/></p>
+<p>以此类推，Because each summation effectively removes a variable from the distribution, this can be viewed as the removal of a node from the graph.</p>
+<p>we can express the desired marginal in the form
+<img alt="" src="../Pasted%20image%2020210426123338.png"/>
+这个式子没有增加什么新东西，只是把(8.50)重新排序
+这个式子的复杂度为<span class="arithmatex">\(O(NK^2)\)</span></p>
+<h4 id="passing-of-local-messages">passing of local messages<a class="headerlink" href="#passing-of-local-messages" title="Permanent link">¶</a></h4>
+<p>We now give a powerful interpretation of this calculation in terms of the <strong>passing of local messages</strong> around on the graph.</p>
+<p>marginal <span class="arithmatex">\(x_N\)</span> 可以分解为两项之积以及normalization term
+<img alt="" src="../Pasted%20image%2020210426153533.png"/></p>
+<p>We shall interpret <span class="arithmatex">\(µ_α(x_n)\)</span> as a message passed forwards along the chain from node <span class="arithmatex">\(x_{n−1}\)</span> to node <span class="arithmatex">\(x_n\)</span>. 
+Similarly, <span class="arithmatex">\(µ_β(x_n)\)</span> can be viewed as a message passed backwards along the chain to node <span class="arithmatex">\(x_n\)</span> from node <span class="arithmatex">\(x_{n+1}\)</span>. 
+注意<span class="arithmatex">\(\mu\)</span>只代表相邻一项传过来的信息
+Note that each of the messages comprises a set of K values, one for each choice of xn, and so the product of two messages should be interpreted as the <strong>point-wise multiplication</strong> of the elements of the two messages to give another set of K values.</p>
+<p>因此可以得出递归式：
+<img alt="" src="../Pasted%20image%2020210426154820.png"/>
+<img alt="" src="../Pasted%20image%2020210426154829.png"/>
+因此因为头和尾没有μ，因此可以递归计算，如：
+<img alt="" src="../Pasted%20image%2020210426160015.png"/>
+<img alt="" src="../Pasted%20image%2020210426155804.png"/>
+注意脚标：The outgoing message <span class="arithmatex">\(µ_α(x_n)\)</span> in (8.55) is obtained by multiplying the incoming message <span class="arithmatex">\(µ_α(x_{n-1})\)</span> by the local potential involving <strong>the node variable and the outgoing variable</strong> and then summing over <strong>the node variable</strong>.</p>
+<p>这个图叫做<strong>Markov chains</strong>，and the corresponding message passing equations represent an example of the <strong>ChapmanKolmogorov equations</strong> for Markov processes</p>
+<p>如果想得到chain上每个变量的marginal，就可以先从<span class="arithmatex">\(x_N\)</span>开始求出所有的<span class="arithmatex">\(µ_\beta(x_i)\)</span>，从从<span class="arithmatex">\(x_1\)</span>开始求出所有的<span class="arithmatex">\(µ_\alpha(x_i)\)</span>。把所有的结果存起来，然后再算marginal。</p>
+<hr/>
+<h4 id="note-observation">Note: observation<a class="headerlink" href="#note-observation" title="Permanent link">¶</a></h4>
+<p>如果有某些变量被观测：If some of the nodes in the graph are observed, then <strong>the corresponding variables are simply clamped to their observed values and there is no summation</strong>.
+注意这个指示函数<span class="arithmatex">\(I\)</span>是和summation同时出现的，举个例子：我们要算<span class="arithmatex">\(\sum_{x_1}\sum_{x2}f(x_1,x_2)\)</span>，然后我们观测了<span class="arithmatex">\(x_2\)</span>为<span class="arithmatex">\(\hat{x_2}\)</span>
+直接代入的话为<span class="arithmatex">\(\sum_{x_1}f(x_1,\hat{x_2})\)</span>,
+如果写成summation+I的话，就是<span class="arithmatex">\(\sum_{x_1}\sum_{x2}f(x_1,x_2)\cdot I(x_2,\hat{x_2})\)</span>,
+此时把summation<span class="arithmatex">\(\sum_{x2}\)</span>展开，此时只有<span class="arithmatex">\(x_2=\hat{x_2}\)</span>的项目会乘1，其他项会乘0.然后再把每一项相加，最后得到的结果就是<span class="arithmatex">\(\sum_{x_1}f(x_1,\hat{x_2})\)</span>，和直接代入的结果相同</p>
+<p><img alt="" src="../Pasted%20image%2020210430165125.png"/></p>
+<hr/>
+<p>相邻两个变量的joint distribution：<span class="arithmatex">\(p(x_{n-1}, x_n)\)</span>
+This is similar to the evaluation of the marginal for a single node, except that there are now two variables that are not summed out.
+<img alt="" src="../Pasted%20image%2020210426163108.png"/>
+<img alt="" src="../Pasted%20image%2020210426163122.png"/></p>
+<h3 id="842-trees">8.4.2 Trees<a class="headerlink" href="#842-trees" title="Permanent link">¶</a></h3>
+<ul>
+<li>
+<p>In the case of an undirected graph, a tree is defined as:
+<strong>a graph in which there is one, and only one, path between any pair of nodes.</strong>
+Such graphs therefore do not have loops. </p>
+</li>
+<li>
+<p>In the case of directed graphs, a tree is defined such that:
+<strong>there is a single node, called the root, which has no parents, and all other nodes have one parent</strong></p>
+</li>
+</ul>
+<p><img alt="" src="../Pasted%20image%2020210426164355.png"/></p>
+<p>the moralization step will not add any links as all nodes have at most one parent, and as a consequence the corresponding moralized graph will be an undirected tree</p>
+<p><strong>If there are nodes in a directed graph that have more than one parent, but there is still only one path (ignoring the direction of the arrows) between any two nodes</strong>, 
+then the graph is a called a <strong>polytree</strong>,</p>
+<p>Such a graph will have more than one node with the property of having no parents, and furthermore, the corresponding moralized undirected graph will have loops.</p>
+<h3 id="843-factor-graphs">8.4.3 Factor graphs<a class="headerlink" href="#843-factor-graphs" title="Permanent link">¶</a></h3>
+<p>sum-product algorithm 适用于undirected and directed trees and to polytrees
+我们也可以把它们统一成一种结构：factor graph</p>
+<p>有向图和无向图都可以把所有变量的总joint分解为function of subset的乘积。
+Factor graphs make this decomposition explicit <strong>by introducing additional nodes for the factors themselves</strong> in addition to the nodes representing the variables.</p>
+<p><img alt="" src="../Pasted%20image%2020210426170222.png"/></p>
+<p>这部分我们用<span class="arithmatex">\(\mathrm{x_s}\)</span>表示变量的子集，用<span class="arithmatex">\(x_i\)</span>表示单一变量（和以前不同，以前<span class="arithmatex">\(x_i\)</span>也可以表示变量的集合）</p>
+<p>对于有向图，<span class="arithmatex">\(f_s(\mathrm{x_s})\)</span> are local conditional distributions. 
+对于无向图，<span class="arithmatex">\(f_s(\mathrm{x_s})\)</span> are potential functions over the maximal cliques (the normalizing coefficient 1/Z can be viewed as a factor defined over the empty set of variables)</p>
+<p>具体画法：
+* there is a node (depicted as usual by a circle) for every variable in the distribution, as was the case for directed and undirected graphs. 
+* There are also additional nodes (depicted by small squares) for each factor fs(xs) in the joint distribution. 
+* Finally, there are undirected links connecting each factor node to all of the variables nodes on which that factor depends.</p>
+<p>比如下面的分布可以画成这样：
+<img alt="" src="../Pasted%20image%2020210426190641.png"/>
+<img alt="" src="../Pasted%20image%2020210426190656.png"/></p>
+<p>在上面这个例子中，<span class="arithmatex">\(f_1\)</span>和<span class="arithmatex">\(f_2\)</span>其实可以合并成potential，<span class="arithmatex">\(f_3\)</span>和<span class="arithmatex">\(f_4\)</span>也可以。但是在factor graph中keeps such factors explicit and so is able to convey more detailed information about the underlying factorization.</p>
+<p>Factor graphs are said to be <strong>bipartite</strong>(二分图) because they consist of two distinct kinds of nodes, and <strong>all links go between nodes of opposite type. </strong></p>
+<p>对于无向图，我们对每个maximum clique建立一个factor node，并把f就设为clique potentials。同一个图可能有不同的factor graph：
+<img alt="" src="../Pasted%20image%2020210426193410.png"/></p>
+<p>对于有向图，create factor nodes corresponding to the conditional distributions, and then finally add the appropriate links.同一个图可能有不同的factor graph
+<img alt="" src="../Pasted%20image%2020210426194452.png"/></p>
+<p>如果我们对directed tree或undirected tree 做moralize，结果仍然是tree(in other words, the factor graph will have no loops, and there will be one and only one path connecting any two nodes)</p>
+<p>需要注意的是，对于<strong>directed polytree</strong>，我们在转化为undirected graph时，是有loop的。但是在moralization中, conversion to a factor graph <strong>again results in a tree</strong>. 
+<img alt="" src="../Pasted%20image%2020210426204607.png"/>
+In fact, local cycles in a directed graph due to links connecting parents of a node can be removed on conversion to a factor graph by defining the appropriate factor function. 此外，有向图中"head to head"产生的local cycles，如果选择合适的factor function，就能在factor graph中去掉：
+<img alt="" src="../Pasted%20image%2020210426204707.png"/></p>
+<h3 id="844-the-sum-product-algorithm">8.4.4 The sum-product algorithm<a class="headerlink" href="#844-the-sum-product-algorithm" title="Permanent link">¶</a></h3>
+<p><strong>"evaluating local marginals over nodes or subsets of nodes"</strong></p>
+<p>在本章中，我们假设变量都是离散的，这样我们就可以用sum来做marginalize。但事实上sum-product algorithm对于linear-Gaussian models也适用</p>
+<p>在directed graph中还有一个用于exact inference的算法，belief propagation，可以看作sum-product algorithm的一个special case。
+Here we shall consider only the sum-product algorithm because it is simpler to derive and to apply, as well as being more general.</p>
+<p>我们假设原本的graph是an undirected tree or a directed tree or
+polytree，<strong>so that the corresponding factor graph has a tree structure</strong></p>
+<p>Our goal：
+1. to obtain an efficient, exact inference algorithm for finding marginals
+2. in situations where several marginals are required to allow computations to be shared efficiently</p>
+<h4 id="finding-the-marginal-px-for-particular-variable-node-x">finding the marginal p(x) for particular variable node x<a class="headerlink" href="#finding-the-marginal-px-for-particular-variable-node-x" title="Permanent link">¶</a></h4>
+<p>目前，我们假设所有变量都是hidden的。</p>
+<p>By definition, the marginal is obtained by summing the joint distribution over all variables except x so that
+<img alt="" src="../Pasted%20image%2020210426211321.png"/></p>
+<p>Idea:
+to substitute for p(x) using the factor graph expression (8.59) 
+<img alt="" src="../Pasted%20image%2020210426211422.png"/>
+and then interchange summations and products in order to obtain an efficient algorithm</p>
+<p>回想到bipartite的性质，与x相连的一定是f节点
+再回想到tree的性质，任意两个节点之间只有一个path</p>
+<p>因此把与x相连的节点从x与f的连接处断开，分成若干个group，各个group并不相连
+<img alt="" src="../Pasted%20image%2020210426223719.png"/></p>
+<p>回想factor graph的定义，joint可以写成product of functions of subset
+<img alt="" src="../Pasted%20image%2020210426224015.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210426224126.png"/></p>
+<p>ne(x) denotes the set of factor nodes that are neighbours of x, and Xs denotes the set of all variables in the subtree connected to the variable node x via the factor node fs, and Fs(x,Xs) represents the product of all the factors in the group associated with factor fs.</p>
+<p>各个group并不相连，因此可以写成各个group的乘积</p>
+<p>代入到p(x)的表达式中，利用乘法分配律交换乘法与加法
+<img alt="" src="../Pasted%20image%2020210426225256.png"/>
+functions of each group 的乘积，对于所有其他变量求sum
+-&gt;
+对于每个function of each group，对于所有其他变量求sum，然后再乘起来
+(而在因为group彼此不相连，在<span class="arithmatex">\(group_i\)</span>上，对于所有变量sum等于对<span class="arithmatex">\(group_i\)</span>内部的变量sum，也就是<span class="arithmatex">\(X_s\)</span>，所以上图中的summation可以写成<span class="arithmatex">\(X_s\)</span>)</p>
+<p>将group内部的summation定义为<strong>messages</strong> from the factor nodes <span class="arithmatex">\(f_s\)</span> to the variable node x
+<img alt="" src="../Pasted%20image%2020210426230211.png"/>
+We see that the required marginal p(x) is given by the product of all the incoming messages arriving at node x.
+marginal p(x)就是所有传到node x的message的乘积</p>
+<p><span class="arithmatex">\(F_s(x,X_s)\)</span> is described by a factor (sub-)graph and so <strong>can itself be factorized</strong>. In particular, we can write
+<img alt="" src="../Pasted%20image%2020210426231032.png"/>
+where, for convenience, we have denoted the variables associated with factor <span class="arithmatex">\(f_s\)</span>,in addition to x,by <span class="arithmatex">\(x_1,...,x_M\)</span>，同时也可以写成<span class="arithmatex">\(\mathrm{x}_s\)</span>
+（因为<span class="arithmatex">\(F_s(x,X_s)\)</span>也是一个factor (sub-)graph，因此也可以写成product of functions of subset的形式，上面的式子只是一种比较有用的形式）</p>
+<p><img alt="" src="../Pasted%20image%2020210426230951.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210426232008.png"/>
+注意这里的<span class="arithmatex">\(f_s(...)\)</span>就是各个f节点所对应的函数
+观察到上面的这个
+<img alt="" src="../Pasted%20image%2020210426232429.png"/>
+又是一个summation on group，因此还是可以写成message的形式，只不过这次由(图8.47)可以看出，message是由x node流向f node的。
+<img alt="" src="../Pasted%20image%2020210426232909.png"/>
+还是由于tree的性质，(图8.47)中的每个group仍然是互不相连的</p>
+<p>然后再对<span class="arithmatex">\(G_m(x_m,X_{sm})\)</span>分解，
+<img alt="" src="../Pasted%20image%2020210426233641.png"/>
+where the product is taken over all neighbours of node xm except for node <span class="arithmatex">\(f_s\)</span>
+<img alt="" src="../Pasted%20image%2020210426233519.png"/></p>
+<p>同时我们观察到，<span class="arithmatex">\(F_l(x_m,X_{ml})\)</span>和最初求p(x)的因子是一样的
+Note that each of the factors <span class="arithmatex">\(F_l(x_m,X_{ml})\)</span> represents a subtree of the original graph of precisely the same kind as introduced in (8.62).
+<img alt="" src="../Pasted%20image%2020210426233959.png"/></p>
+<p>Substituting (8.68) into (8.67), we then obtain
+<img alt="" src="../Pasted%20image%2020210426234210.png"/>
+where we have used the definition (8.64) of the messages passed from factor nodes to variable nodes.</p>
+<p><strong>Thus to evaluate the message sent by a variable node to an adjacent factor node along the connecting link, we simply take the product of the incoming messages along all of the other links.</strong></p>
+<p>Note:
+* any variable node that has only two neighbours performs no computation but simply passes messages through unchanged
+* a variable node can send a message to a factor node once it has received incoming messages from all other neighbouring factor nodes</p>
+<p>Each of these messages can be computed recursively in terms of other messages. In order to start this recursion, we can view the node x as the root of the tree and begin at the leaf nodes.</p>
+<p>现在就来考虑leaf nodes的计算，
+* if a leaf node is a variable node, then the message that it sends along its one and only link is given by
+    <img alt="" src="../Pasted%20image%2020210427000131.png"/>
+    因为此时F代表在一个empty的group上面summation，结果为1
+    <img alt="" src="../Pasted%20image%2020210427000218.png"/>
+* if the leaf node is a factor node, we see from (8.66) that the message sent should take the form
+    <img alt="" src="../Pasted%20image%2020210427000320.png"/>
+    因为此时G也是在一个empty的group上面summation，结果为1，而前边对各种x进行summation之后，就变成了f(x)
+    <img alt="" src="../Pasted%20image%2020210427000334.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210427000511.png"/></p>
+<p>总结：
+1. viewing the variable node x as the root of the factor graph and initiating messages at the leaves of the graph using (8.70) and (8.71)
+    <img alt="" src="../Pasted%20image%2020210427105642.png"/>
+<img alt="" src="../Pasted%20image%2020210427105652.png"/>
+1. The message passing steps (8.66) and (8.69) are then applied recursively until messages have been propagated along every link, and the root node has received messages from all of its neighbours
+    <img alt="" src="../Pasted%20image%2020210427105714.png"/>
+<img alt="" src="../Pasted%20image%2020210427105804.png"/>
+1. Once the root node has received messages from all of its neighbours, the required marginal can be evaluated using (8.63).
+    <img alt="" src="../Pasted%20image%2020210427105830.png"/></p>
+<h4 id="find-the-marginals-for-every-variable-node">find the marginals for every variable node<a class="headerlink" href="#find-the-marginals-for-every-variable-node" title="Permanent link">¶</a></h4>
+<p>We can obtain a much more efficient procedure by ‘overlaying’ these multiple message passing algorithms to obtain the general sum-product algorithm as follows</p>
+<ol>
+<li>任意选定一个node作为root</li>
+<li>从leaf把message传到root</li>
+<li>root可以从所有的邻居那里收到message，也就能把信息再发给每个邻居</li>
+</ol>
+<p>By now, a message will have passed in both directions across every link in the graph</p>
+<h4 id="find-the-marginal-distributions-pmathrmx_s-associated-with-the-sets-of-variables-belonging-to-each-of-the-factors">find the marginal distributions <span class="arithmatex">\(p(\mathrm{x_s})\)</span> associated with the sets of variables belonging to each of the factors<a class="headerlink" href="#find-the-marginal-distributions-pmathrmx_s-associated-with-the-sets-of-variables-belonging-to-each-of-the-factors" title="Permanent link">¶</a></h4>
+<p>it is easy to see that the marginal associated with a factor is given by the <strong>product of messages arriving at the factor node and the local factor at that node</strong>
+<img alt="" src="../Pasted%20image%2020210427111735.png"/>
+in complete analogy with the marginals at the variable nodes</p>
+<p>回想(8.66)，这两者都是要求<span class="arithmatex">\(f_s\)</span>节点所代表的"message".只不过(8.66)严格意义上的message需要对<span class="arithmatex">\(\mathrm{x_s}\)</span>summation，而我们想求<span class="arithmatex">\(p(\mathrm{x_s})\)</span>，当然就不用求和了
+<img alt="" src="../Pasted%20image%2020210427112019.png"/></p>
+<p>If the factors are parameterized functions and we wish to learn the values of the parameters using the EM algorithm, then these marginals are precisely the quantities we will need to calculate in the E step, as we shall see in detail when we discuss the hidden Markov model in Chapter 13.</p>
+<h4 id="a-different-view">a different view<a class="headerlink" href="#a-different-view" title="Permanent link">¶</a></h4>
+<p>因为从variable node指向factor node，就只是单纯的相乘
+因此可以忽视掉所有的variable node，将max-product只看作是一个factor node之间传递message的过程
+The sum-product algorithm can be viewed purely in terms of messages sent out by factor nodes to other factor nodes.</p>
+<p><img alt="" src="../Pasted%20image%2020210427113248.png"/></p>
+<h4 id="normalization">normalization<a class="headerlink" href="#normalization" title="Permanent link">¶</a></h4>
+<p>如果factor graph由有向图转换而来，the joint distribution is already correctly normalized
+如果factor graph由无向图转换而来，in general there will be an unknown normalization coefficient 1/Z. </p>
+<p>As with the simple chain example of Figure 8.38, this is easily handled by working with an unnormalized version <span class="arithmatex">\(\widetilde{p}(x)\)</span> of the joint distribution,
+where <span class="arithmatex">\(p(x) = \widetilde{p}(x)/Z\)</span>
+<img alt="" src="../Pasted%20image%2020210427113900.png"/>
+We first run the sum-product algorithm to find the corresponding <strong>unnormalized marginals <span class="arithmatex">\(p(x_i)\)</span></strong>. The coefficient <span class="arithmatex">\(1/Z\)</span> is then easily obtained by normalizing any one of these marginals, and this is computationally efficient because the normalization is done over a single variable rather than over the entire set of variables as would be required to normalize <span class="arithmatex">\(p(x)\)</span> directly.
+也就是，对于无向图，在marginalize之前的所有计算中，joint都可以不用normalize。等到最终求出margin之后，对于这一个变量求和得出Z就可以了</p>
+<h4 id="example">example<a class="headerlink" href="#example" title="Permanent link">¶</a></h4>
+<p><img alt="" src="../Pasted%20image%2020210427130347.png"/>
+这里这个graph并不一定是从有向图还是无向图得来，因此不一定normalize
+这个graph的<strong>unnormalized</strong> joint distribution为：
+<img alt="" src="../Pasted%20image%2020210427130700.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210427131001.png"/>
+<img alt="" src="../Pasted%20image%2020210427131217.png"/>
+<img alt="" src="../Pasted%20image%2020210427131229.png"/></p>
+<p>此时，每个link上面两个方向的message就都算出来了
+最后，根据
+<img alt="" src="../Pasted%20image%2020210427131539.png"/>
+求出<span class="arithmatex">\(x_2\)</span>的unnormalized margin：
+<img alt="" src="../Pasted%20image%2020210427131609.png"/>
+在此之上对<span class="arithmatex">\(x_2\)</span>求和，就能求出normalization term Z</p>
+<h4 id="observed-variable">observed variable<a class="headerlink" href="#observed-variable" title="Permanent link">¶</a></h4>
+<p>In most practical applications, a subset of the variables will be observed, and we wish to calculate posterior distributions conditioned on these observations.</p>
+<p>这段要类比于8.4.1中对于chain的observe看，
+<img alt="" src="../Pasted%20image%2020210427202425.png"/>
+注意此时得出的结果是unnormalized的</p>
+<h3 id="845-the-max-sum-algorithm">8.4.5 The max-sum algorithm<a class="headerlink" href="#845-the-max-sum-algorithm" title="Permanent link">¶</a></h3>
+<p>sum-product algorithm用于take a joint distribution <span class="arithmatex">\(p(\mathrm{x})\)</span> expressed as a factor graph and efficiently find marginals over the component variables
+一般我们还有两个常见的任务：
+* find a setting of the variables that has the largest probability
+* find the value of that probability</p>
+<p>这两个工作可以用<strong>max-sum</strong>, which can be viewed as an application of <strong>dynamic programming</strong> in the context of graphical models</p>
+<p>最简单的思路就是，对每个变量x都跑一遍max-product，然后在各自的marginal上边找到最大值 <span class="arithmatex">\(x_i^*\)</span>. 但是this would give the set of values that are <strong>individually</strong> the most probable.</p>
+<p>In practice, we typically wish to find the <strong>set of values</strong> that <strong>jointly</strong> have the largest probability, in other words the vector <span class="arithmatex">\(x_{max}\)</span> that maximizes the joint distribution, so that
+<img alt="" src="../Pasted%20image%2020210427205442.png"/></p>
+<p>也就是我们要找<strong>一组值</strong>，让joint <span class="arithmatex">\(p(\mathrm{x})\)</span>达到 max，而不是在每一维度找一个max然后拼起来</p>
+<h4 id="find-the-maximum-of-the-joint-distribution-by-propagating-messages-from-the-leaves-to-an-arbitrarily-chosen-root-node">find the maximum of the joint distribution (by propagating messages from the leaves to an arbitrarily chosen root node)<a class="headerlink" href="#find-the-maximum-of-the-joint-distribution-by-propagating-messages-from-the-leaves-to-an-arbitrarily-chosen-root-node" title="Permanent link">¶</a></h4>
+<p>假设一共有M个变量，可以把max写成展开的形式：
+<img alt="" src="../Pasted%20image%2020210427205941.png"/></p>
+<p>and then substitute for <span class="arithmatex">\(p(\mathrm{x})\)</span> using its expansion in terms of a product of factors。然后可以对<span class="arithmatex">\(p(\mathrm{x})\)</span>进行分解</p>
+<p>在max-product中，我们利用乘法分配律交换了乘法与求和
+而在这里max-sum中，我们利用max的性质交换乘法与max
+<img alt="" src="../Pasted%20image%2020210427210433.png"/></p>
+<p>先考虑chain上的情况，因为是factor graph，可以拆分
+<img alt="" src="../Pasted%20image%2020210427211548.png"/>
+<img alt="" src="../Pasted%20image%2020210427211852.png"/></p>
+<p>我们可以看到交换之后的式子is easily interpreted in terms of messages passed from node xN backwards along the chain to node x1. （在引入factor graph之前的那部分讨论过，chain的message就是potential）</p>
+<p>下面从chain推广到tree，把
+<img alt="" src="../Pasted%20image%2020210427223345.png"/>
+代入到max的性质中
+The structure of this calculation is identical to that of the sum-product algorithm, and so we can simply translate those results into the present context.</p>
+<p>In particular, suppose that we designate a particular variable node as the ‘root’ of the graph. 
+Then we start a set of messages propagating inwards from the leaves of the tree towards the root, with each node sending its message towards the root once it has received all incoming messages from its other neighbours. 
+The final maximization is performed over the product of all messages arriving at the root node, and gives the <strong>maximum</strong> value for <span class="arithmatex">\(p(\mathrm{x})\)</span>
+<img alt="" src="../Pasted%20image%2020210427224107.png"/>
+观察sum-product得到的式子，这个式子是由乘法分配律得到的。max-product的推导在下面。
+This could be called the max-product algorithm and is identical to the sum-product algorithm except that <strong>summations are replaced by maximizations</strong>.</p>
+<hr/>
+<p>Q：那这样岂不是应该把上面的式子的求和换成max么，不应该是max-product么，为什么是max-sum？
+通常对p(x)求ln，防止underflow。In practice, products of many small probabilities can lead to numerical underflow problems, and so it is convenient to work with the logarithm of the joint distribution.
+因为lnx单调，所以max和ln可以交换
+<img alt="" src="../Pasted%20image%2020210427225220.png"/>
+此时max的性质还在，只不过从乘法变成加法
+<img alt="" src="../Pasted%20image%2020210427225331.png"/></p>
+<p><strong>Thus taking the logarithm simply has the effect of replacing the products in the max-product algorithm with sums, and so we obtain the max-sum algorithm</strong></p>
+<p>类比sum-product的结论，我们可以直接写出max-sum的式子：
+<img alt="" src="../Pasted%20image%2020210427231754.png"/>
+<img alt="" src="../Pasted%20image%2020210427231839.png"/>
+while at the root node the maximum probability can then be computed, by analogy with (8.63), using
+<img alt="" src="../Pasted%20image%2020210427232538.png"/></p>
+<p>由此就得到了joint的max</p>
+<h4 id="finding-the-configuration-of-the-variables-for-which-the-joint-distribution-attains-this-maximum-value">finding the configuration of the variables for which the joint distribution attains this maximum value<a class="headerlink" href="#finding-the-configuration-of-the-variables-for-which-the-joint-distribution-attains-this-maximum-value" title="Permanent link">¶</a></h4>
+<p>我们想要得到与上面的<span class="arithmatex">\(p^{max}\)</span>对应的<span class="arithmatex">\(x^{max}\)</span>
+<img alt="" src="../Pasted%20image%2020210427233031.png"/>
+At this point, we might be tempted simply to continue with the message passing algorithm and send messages from the root back out to the leaves, using (8.93) and (8.94), then apply (8.98) to all of the remaining variable nodes. However, because we are now maximizing rather than summing, it is possible that there may be multiple configurations of x all of which give rise to the maximum value for p(x).In such cases, this strategy can fail because <strong>it is possible for the individual variable values obtained by maximizing the product of messages at each node to belong to different maximizing configurations, giving an overall configuration that no longer corresponds to a maximum</strong>.</p>
+<p>The problem can be resolved by adopting a rather different kind of message passing from the root node to the leaves</p>
+<p>let us return once again to the simple chain example of N variables x1,...,xN each having K states
+Suppose we take node xN to be the root node. Then in the first phase, we propagate messages from the leaf node x1 to the root node using
+<img alt="" src="../Pasted%20image%2020210427234256.png"/>
+<img alt="" src="../Pasted%20image%2020210427234305.png"/>
+然后就能得到The most probable value for xN
+<img alt="" src="../Pasted%20image%2020210427234338.png"/></p>
+<p>现在我们想得到the states of the previous variables that <strong>correspond to the same maximizing configuration</strong>.</p>
+<p>This can be done by <strong>keeping track of which values of the variables gave rise to the maximum state of each variable</strong>, in other words by storing quantities given by
+<img alt="" src="../Pasted%20image%2020210427234628.png"/></p>
+<p>下面来解释一下这个式子：
+<img alt="" src="../Pasted%20image%2020210428000602.png"/>
+Note that this is not a probabilistic graphical model because the nodes represent individual states of variables
+For each state of a given variable, there is a unique state of the previous variable that maximizes the probability 
+Once we know the most probable value of the final node xN, we can then simply follow the link back to find the most probable state of node xN−1 and so on back to the initial node x1</p>
+<p>This corresponds to propagating a message back down the chain using
+<img alt="" src="../Pasted%20image%2020210428001101.png"/>
+and is known as <strong>back-tracking</strong>.</p>
+<p>如果我们正向max-sum之后，反向传播，然后对每个变量套用这个式子：
+<img alt="" src="../Pasted%20image%2020210428002742.png"/>
+最后选出的组合可能分布在(图8.53)的几条不同的路径中，最终就导致不是global maximum</p>
+<p>extension to a general tree-structured factor graph：
+换句话说，在正向message传播的时候，我们需要算这个东西，
+<img alt="" src="../Pasted%20image%2020210428011457.png"/>
+在对M个变量逐个max的时候，我们记下每个变量满足这个式子的值
+<img alt="" src="../Pasted%20image%2020210428011627.png"/>
+然后我们在正向传播结束之后通过这个式子得到了<span class="arithmatex">\(p^{max}\)</span>
+<img alt="" src="../Pasted%20image%2020210428012205.png"/>
+此时我们存下来的那些值就自动对应<span class="arithmatex">\(p^{max}_1,...,p^{max}_M\)</span></p>
+<p>An important application of this technique is for finding the most probable sequence of hidden states in a hidden Markov model, in which case it is known as the Viterbi algorithm</p>
+<h4 id="observation">observation<a class="headerlink" href="#observation" title="Permanent link">¶</a></h4>
+<p>The observed variables are clamped to their observed values, and the maximization is performed over the remaining hidden variables. This can be shown formally by including identity functions for the observed variables into the factor functions, as we did for the sum-product algorithm.</p>
+<h3 id="846-exact-inference-in-general-graphs">8.4.6 Exact inference in general graphs<a class="headerlink" href="#846-exact-inference-in-general-graphs" title="Permanent link">¶</a></h3>
+<p>sum-product和max-sum适用于tree，然而实践中we have to deal with graphs having loops
+将tree上面的inference推广到任意拓扑结构的算法称为junction tree algorithm
+大概步骤：
+1. 把有向图转化为无向图，无向图不用变
+2. Next the graph is <em>triangulated</em>, which involves finding chord-less cycles containing four or more nodes and adding extra links to eliminate such chord-less cycles
+    <img alt="" src="../Pasted%20image%2020210428133838.png"/>
+    在上面这个图中，A-D-B-C-A为chordless cycle，此时要在AB或CD任意加一条边
+    注意potential还是原来的函数，只不过是按新的结构进行分解
+3. 用这个triangulated undirected graph建立a new tree-structured undirected graph called a join tree
+    join tree中的每个节点代表无向图中的一个maximal clique，有公共变量的maximal clique之间有link
+    * 这个连接各个clique形成树的过程，要满足一定的条件，使得最后形成的树是maximal spanning tree
+    * 其中link的weight为两个clique共有变量的个数，tree的weight是树上所有link的weight之和
+    * If the tree is condensed, so that any clique that is a subset of another clique is absorbed into the larger clique, this gives a <strong>junction tree</strong>. 
+    * <strong>As a consequence of the triangulation step</strong>, the resulting tree satisfies the <strong>running intersection property</strong>, which means that if a variable is contained in two cliques, then it must also be contained in every clique on the path that connects them.
+4. a two-stage message passing algorithm, essentially equivalent to the sum-product algorithm, can now be applied to this junction tree in order to find marginals and conditionals</p>
+<p>虽然前面很复杂，但这个算法的核心仍然是交换乘法和加法，使得我们可以先summation出局部的message，再把message传递相乘。而不是直接对joint 进行summation。
+at its heart is the simple idea that we have used already of exploiting the factorization properties of the distribution to <strong>allow sums and products to be interchanged so that partial summations can be performed, thereby avoiding having to work directly with the joint distribution</strong></p>
+<p>局限性：
+Unfortunately, the algorithm must work with the joint distributions <strong>within each node</strong> (each of which corresponds to a clique of the triangulated graph) and so the computational cost of the algorithm is determined by the number of variables in the largest clique，并且会指数增长</p>
+<h3 id="847-loopy-belief-propagation">8.4.7 Loopy belief propagation<a class="headerlink" href="#847-loopy-belief-propagation" title="Permanent link">¶</a></h3>
+<p>在approximate inference中，需要用到chapter10中的variational methods和chapter11的Monte Carlo methods。
+这里先简单介绍一种用于graph with loops 的approximate方法
+思想：
+The idea is simply to apply the sum-product algorithm even though there is no guarantee that it will yield good results.
+因为graph现在有cycles了，information can flow many times around the graph. For some models, the algorithm will converge, whereas for others it will not.
+(Mark，这里跳了一段)</p>
+<h3 id="848-learning-the-graph-structure">8.4.8 Learning the graph structure<a class="headerlink" href="#848-learning-the-graph-structure" title="Permanent link">¶</a></h3>
+<p>之前我们都是假设graph是已知的，
+理论上我们可以为graph的结构设一个prior，然后利用posterior来进行预测：
+<img alt="" src="../Pasted%20image%2020210428144111.png"/>
+也就是make predictions by averaging with respect to this distribution
+然而这样计算量太大，一般都会采用heuristics来筛选graph的结构</p>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../../assets/javascripts/bundle.51198bba.min.js"></script>
+<script src="../../../javascripts/mathjax.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</body>
+</html>

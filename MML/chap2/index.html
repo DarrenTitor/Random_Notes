@@ -1,0 +1,1230 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../chap1/" rel="prev"/>
+<link href="../chap3/" rel="next"/>
+<link href="../../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.4.2, mkdocs-material-9.1.7" name="generator"/>
+<title>chap2: Linear Algebra - Some random ML notes</title>
+<link href="../../assets/stylesheets/main.ded33207.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.a0c5b2b5.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="cyan" data-md-color-primary="white" data-md-color-scheme="default" dir="ltr">
+<script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#chap2-linear-algebra">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Some random ML notes" class="md-header__button md-logo" data-md-component="logo" href="../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Some random ML notes
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              chap2: Linear Algebra
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="white" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="light-blue" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="deep-purple" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+</form>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Some random ML notes" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+    Some random ML notes
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+        Nothing special here
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          MML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+          MML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap1/">
+        chap 1: Introduction and Motivation
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          chap2: Linear Algebra
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+        chap2: Linear Algebra
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#21-systems-of-linear-equations">
+    2.1 Systems of Linear Equations
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#22-matrices">
+    2.2 Matrices
+  </a>
+<nav aria-label="2.2 Matrices" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#222-inverse-and-transpose">
+    2.2.2 Inverse and Transpose
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#223-multiplication-by-a-scalar">
+    2.2.3 Multiplication by a Scalar
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#224-compact-representations-of-systems-of-linear-equations">
+    2.2.4 Compact Representations of Systems of Linear Equations
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#23-solving-systems-of-linear-equations">
+    2.3 Solving Systems of Linear Equations
+  </a>
+<nav aria-label="2.3 Solving Systems of Linear Equations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#231-particular-and-general-solution">
+    2.3.1 Particular and General Solution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#232-elementary-transformations">
+    2.3.2 Elementary Transformations
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#233-the-minus-1-trick">
+    2.3.3 The Minus-1 Trick
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#234-algorithms-for-solving-a-system-of-linear-equations">
+    2.3.4 Algorithms for Solving a System of Linear Equations
+  </a>
+<nav aria-label="2.3.4 Algorithms for Solving a System of Linear Equations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rkaniff-ata-is-invertible">
+    证明\(rk(A)=n\iff A^TA \, is \, invertible\).
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#24-vector-spaces">
+    2.4 Vector Spaces
+  </a>
+<nav aria-label="2.4 Vector Spaces" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#241-groups">
+    2.4.1 Groups
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#242-vector-spaces">
+    2.4.2 Vector Spaces
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#243-vector-subspaces">
+    2.4.3 Vector Subspaces
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#25-linear-independence">
+    2.5 Linear Independence
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#26-basis-and-rank">
+    2.6 Basis and Rank
+  </a>
+<nav aria-label="2.6 Basis and Rank" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#262-rank">
+    2.6.2 Rank
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#27-linear-mappings">
+    2.7 Linear Mappings
+  </a>
+<nav aria-label="2.7 Linear Mappings" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#271-matrix-representation-of-linear-mappings">
+    2.7.1 Matrix Representation of Linear Mappings
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#272-basis-change">
+    2.7.2 Basis Change
+  </a>
+<nav aria-label="2.7.2 Basis Change" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_1">
+    矩阵等价、矩阵相似
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#273-image-and-kernel">
+    2.7.3 Image and Kernel
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#28-affine-spaces">
+    2.8 Affine Spaces
+  </a>
+<nav aria-label="2.8 Affine Spaces" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#281-affine-subspaces">
+    2.8.1 Affine Subspaces
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#282-affine-mappings">
+    2.8.2 Affine Mappings
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap3/">
+        chap3 Analytic Geometry
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap4/">
+        chap 4 - Matrix Decompositions
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap5/">
+        chap5 - Vector Calculus
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap6%20-%20Probability%20and%20Distributions/">
+        Probability and Distributions
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          NLP
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+          NLP
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+          Lecture
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+          Lecture
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1_1" id="__nav_3_1_1_label" tabindex="0">
+          HMM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_1_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_3_1_1">
+<span class="md-nav__icon md-icon"></span>
+          HMM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../NLP/Lecture/HMM/HMM/">
+        HMM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          Speech Synthesis
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_2">
+<span class="md-nav__icon md-icon"></span>
+          Speech Synthesis
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../NLP/Speech%20Synthesis/Speech%20Papers/">
+        Speech Papers
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          PGM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+          PGM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          Course
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_1">
+<span class="md-nav__icon md-icon"></span>
+          Course
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture01-Introduction/">
+        lecture01-Introduction
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture02-MRFrepresentation/">
+        lecture02-MRFrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture03-BNrepresentation/">
+        lecture03-BNrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture04-ExactInference/">
+        lecture04-ExactInference
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture05-ParameterEst/">
+        lecture05 ParameterEst
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture06-HMMCRF/">
+        lecture06 HMMCRF
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture07-VI1/">
+        lecture07-VI1
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture08-VI2/">
+        lecture08 VI2
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture09-MC/">
+        lecture09-MC
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture10-MCMC-opt/">
+        lecture10-MCMC-opt
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture11-NN/">
+        lecture11-NN
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture12-DGM1/">
+        lecture12-DGM1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          Pyro
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_2">
+<span class="md-nav__icon md-icon"></span>
+          Pyro
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/pyro/Untitled/">
+        An Introduction to Models in Pyro
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          PRML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+          PRML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          Chap1
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+          Chap1
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap1/chap1/">
+        Chap1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+          Chap10
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+          Chap10
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap10/Pasted%20image%2020210519194435.png/">
+        Pasted image 20210519194435.png
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap10/chap10/">
+        10. Approximate Inference
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          Chap2
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_3">
+<span class="md-nav__icon md-icon"></span>
+          Chap2
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap2/chap2/">
+        Chap2
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+          Chap3
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_4">
+<span class="md-nav__icon md-icon"></span>
+          Chap3
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap3/chap3/">
+        Chap3
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+          Chap8
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_5">
+<span class="md-nav__icon md-icon"></span>
+          Chap8
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap8/chap8/">
+        8. GRAPHICAL MODELS
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+          Chap9
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_6_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_6">
+<span class="md-nav__icon md-icon"></span>
+          Chap9
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap9/chap9/">
+        9. Mixture Models and EM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#21-systems-of-linear-equations">
+    2.1 Systems of Linear Equations
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#22-matrices">
+    2.2 Matrices
+  </a>
+<nav aria-label="2.2 Matrices" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#222-inverse-and-transpose">
+    2.2.2 Inverse and Transpose
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#223-multiplication-by-a-scalar">
+    2.2.3 Multiplication by a Scalar
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#224-compact-representations-of-systems-of-linear-equations">
+    2.2.4 Compact Representations of Systems of Linear Equations
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#23-solving-systems-of-linear-equations">
+    2.3 Solving Systems of Linear Equations
+  </a>
+<nav aria-label="2.3 Solving Systems of Linear Equations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#231-particular-and-general-solution">
+    2.3.1 Particular and General Solution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#232-elementary-transformations">
+    2.3.2 Elementary Transformations
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#233-the-minus-1-trick">
+    2.3.3 The Minus-1 Trick
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#234-algorithms-for-solving-a-system-of-linear-equations">
+    2.3.4 Algorithms for Solving a System of Linear Equations
+  </a>
+<nav aria-label="2.3.4 Algorithms for Solving a System of Linear Equations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rkaniff-ata-is-invertible">
+    证明\(rk(A)=n\iff A^TA \, is \, invertible\).
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#24-vector-spaces">
+    2.4 Vector Spaces
+  </a>
+<nav aria-label="2.4 Vector Spaces" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#241-groups">
+    2.4.1 Groups
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#242-vector-spaces">
+    2.4.2 Vector Spaces
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#243-vector-subspaces">
+    2.4.3 Vector Subspaces
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#25-linear-independence">
+    2.5 Linear Independence
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#26-basis-and-rank">
+    2.6 Basis and Rank
+  </a>
+<nav aria-label="2.6 Basis and Rank" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#262-rank">
+    2.6.2 Rank
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#27-linear-mappings">
+    2.7 Linear Mappings
+  </a>
+<nav aria-label="2.7 Linear Mappings" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#271-matrix-representation-of-linear-mappings">
+    2.7.1 Matrix Representation of Linear Mappings
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#272-basis-change">
+    2.7.2 Basis Change
+  </a>
+<nav aria-label="2.7.2 Basis Change" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_1">
+    矩阵等价、矩阵相似
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#273-image-and-kernel">
+    2.7.3 Image and Kernel
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#28-affine-spaces">
+    2.8 Affine Spaces
+  </a>
+<nav aria-label="2.8 Affine Spaces" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#281-affine-subspaces">
+    2.8.1 Affine Subspaces
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#282-affine-mappings">
+    2.8.2 Affine Mappings
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="chap2-linear-algebra">chap2: Linear Algebra<a class="headerlink" href="#chap2-linear-algebra" title="Permanent link">¶</a></h1>
+<p>除了通常意义上的几何意义上的vector，多项式也可以看作是vector：两个多项式相加可以得到多项式、多项式与标量相乘可以得到多项式。因为满足这两个条件，因此可以视作vector。
+<img alt="" src="../Pasted%20image%2020221009180204.png"/>
+我们更关心的其实是n维实数空间上的vector，比几何意义上的vector更抽象一点：
+<img alt="" src="../Pasted%20image%2020221009180556.png"/></p>
+<p>In this book, we will focus on finitedimensional vector spaces, in which case there is a 1:1 correspondence between any kind of vector and <span class="arithmatex">\(\mathbb{R}^n\)</span>.</p>
+<p>在数学中我们关心closure这个概念，What is the set of all things that can result from my proposed operations? 
+In the case of vectors: What is the set of vectors that can result by starting with a small set of vectors, and adding them to each other and scaling them? 
+这样我们就可以得到<strong>vector space</strong>。</p>
+<p><img alt="" src="../Pasted%20image%2020221009181108.png"/></p>
+<h2 id="21-systems-of-linear-equations">2.1 Systems of Linear Equations<a class="headerlink" href="#21-systems-of-linear-equations" title="Permanent link">¶</a></h2>
+<p>通常，我们将
+<img alt="" src="../Pasted%20image%2020221010192837.png"/>
+写作
+<img alt="" src="../Pasted%20image%2020221010192913.png"/>
+这样的，矩阵相乘的形式。然后求解向量X。</p>
+<p>In general, for a real-valued system of linear equations we obtain either
+<strong>no, exactly one, or infinitely many</strong> solutions.</p>
+<h2 id="22-matrices">2.2 Matrices<a class="headerlink" href="#22-matrices" title="Permanent link">¶</a></h2>
+<p><img alt="" src="../Pasted%20image%2020221010193452.png"/>
+<img alt="" src="../Pasted%20image%2020221010193438.png"/></p>
+<p>矩阵的element-wise product称为hadamard product。
+<img alt="" src="../Pasted%20image%2020221010193641.png"/></p>
+<h3 id="222-inverse-and-transpose">2.2.2 Inverse and Transpose<a class="headerlink" href="#222-inverse-and-transpose" title="Permanent link">¶</a></h3>
+<p>Unfortunately, not every matrix A possesses an inverse A−1. If this inverse does exist, A is called <strong>regular/invertible/nonsingular</strong>, otherwise singular/noninvertible.
+<img alt="" src="../Pasted%20image%2020221010194011.png"/></p>
+<p>当determinant=0时，矩阵不可逆。</p>
+<p>一些重要性质：
+<img alt="" src="../Pasted%20image%2020221010194938.png"/>
+<img alt="" src="../Pasted%20image%2020221010194529.png"/></p>
+<p>对称矩阵的sum一定是对称的，但product不一定对称。
+<img alt="" src="../Pasted%20image%2020221010194615.png"/></p>
+<h3 id="223-multiplication-by-a-scalar">2.2.3 Multiplication by a Scalar<a class="headerlink" href="#223-multiplication-by-a-scalar" title="Permanent link">¶</a></h3>
+<p><img alt="" src="../Pasted%20image%2020221010194801.png"/></p>
+<h3 id="224-compact-representations-of-systems-of-linear-equations">2.2.4 Compact Representations of Systems of Linear Equations<a class="headerlink" href="#224-compact-representations-of-systems-of-linear-equations" title="Permanent link">¶</a></h3>
+<p>线性方程组
+<img alt="" src="../Pasted%20image%2020221010195118.png"/>
+可以写作：</p>
+<p><img alt="" src="../Pasted%20image%2020221010195151.png"/>
+注意每个x所对应的是column，不是row。
+统称为<span class="arithmatex">\(Ax=b\)</span>。
+<span class="arithmatex">\(Ax\)</span> is a (linear) combination of the columns of <span class="arithmatex">\(A\)</span>.</p>
+<h2 id="23-solving-systems-of-linear-equations">2.3 Solving Systems of Linear Equations<a class="headerlink" href="#23-solving-systems-of-linear-equations" title="Permanent link">¶</a></h2>
+<h3 id="231-particular-and-general-solution">2.3.1 Particular and General Solution<a class="headerlink" href="#231-particular-and-general-solution" title="Permanent link">¶</a></h3>
+<p><img alt="" src="../Pasted%20image%2020221010200623.png"/>
+<img alt="" src="../Pasted%20image%2020221010201438.png"/>
+<img alt="" src="../Pasted%20image%2020221010201458.png"/></p>
+<h3 id="232-elementary-transformations">2.3.2 Elementary Transformations<a class="headerlink" href="#232-elementary-transformations" title="Permanent link">¶</a></h3>
+<p>elementary transformations在不改变solution的同时，可以对方程组进行简化。</p>
+<p><img alt="" src="../Pasted%20image%2020221010201738.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221010205748.png"/>
+row-echelon form的要求：
+- 全0的row放到最下面
+- 阶梯状矩阵，每一行从左起的第一个非0元素必须严格在上一行第一个非0元素的右边。
+- 
+<img alt="" src="../Pasted%20image%2020221010202925.png"/>
+首先把方程组写成augmented matrix。
+然后转换成row-echelon form
+<img alt="" src="../Pasted%20image%2020221010202917.png"/>
+<img alt="" src="../Pasted%20image%2020221010203028.png"/>
+<img alt="" src="../Pasted%20image%2020221010204949.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221010204945.png"/>
+<img alt="" src="../Pasted%20image%2020221010205056.png"/></p>
+<p>借助row-echelon form可以帮助我们找到特解。
+因为上面例子中的pivot为x1, x3, x4，
+因此令augmented matrix中的这三列的线性组合等于向量b。</p>
+<p><img alt="" src="../Pasted%20image%2020221010205122.png"/>
+然后把free variable设为0，就得到了一个特解。
+<img alt="" src="../Pasted%20image%2020221010205359.png"/></p>
+<p>Reduced Row Echelon Form：
+<img alt="" src="../Pasted%20image%2020221010205535.png"/>
+Reduced Row Echelon Form的要求：
+- 全0的row放到最下面
+- 严格呈阶梯状
+- pivot全为1
+- 每一<strong>列</strong>除了pivot，其余全为0</p>
+<p>reduced row-echelon form可以帮助我们找通解。
+<img alt="" src="../Pasted%20image%2020221010205550.png"/></p>
+<p>Gaussian elimination就是一个将augmented matrix转化为reduced row-echelon form的算法。
+<img alt="" src="../Pasted%20image%2020221010223636.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221010224025.png"/>
+<img alt="" src="../Pasted%20image%2020221010224032.png"/></p>
+<h3 id="233-the-minus-1-trick">2.3.3 The Minus-1 Trick<a class="headerlink" href="#233-the-minus-1-trick" title="Permanent link">¶</a></h3>
+<p><img alt="" src="../Pasted%20image%2020221010224234.png"/></p>
+<p>这是一个可以快速求出Ax=0的方法。（求出的结果记得要再加上特解，才是最终的通解。）</p>
+<p>适用于reduced row-echelon form没有全0row的情况，
+A为转换后得到的reduced row-echelon form，通常col数大于row数，
+这时我们在A的<strong>各处</strong>增加若干行，将A补全成一个方阵。（不一定加在A的底部，可以插入到A的中间）
+<img alt="" src="../Pasted%20image%2020221010225143.png"/>
+<strong>使得方阵的对角线contains eather 1 or -1.</strong>
+<img alt="" src="../Pasted%20image%2020221010225201.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221010225402.png"/>
+<img alt="" src="../Pasted%20image%2020221010225408.png"/>
+此时，pivot -1所在的columns就是Ax=0的solution。
+实际上这些column组成了Ax=0的解空间的basis，称为kernel或者null space。
+例如：
+<img alt="" src="../Pasted%20image%2020221010225632.png"/></p>
+<p>矩阵求逆的算法：
+之前求解线性方程组我们是求解<span class="arithmatex">\(AX=b\)</span>中的X，
+现在如果想算A的逆，其实就是求解<span class="arithmatex">\(AX=I_n\)</span>.
+这样一来我们只需要将<span class="arithmatex">\([A|I_n]\)</span>视作augmented matrix，然后将其转换为reduced row-echelon form。
+<img alt="" src="../Pasted%20image%2020221010230105.png"/>
+这样一来，augmented matrix右边的部分就是我们想要的X，也就是<span class="arithmatex">\(A^{-1}\)</span>。
+<img alt="" src="../Pasted%20image%2020221010230209.png"/></p>
+<h3 id="234-algorithms-for-solving-a-system-of-linear-equations">2.3.4 Algorithms for Solving a System of Linear Equations<a class="headerlink" href="#234-algorithms-for-solving-a-system-of-linear-equations" title="Permanent link">¶</a></h3>
+<p>在之前的讨论中，我们都假设<span class="arithmatex">\(Ax=b\)</span>有解。当方程组无解的时候，我们只能求其近似解，其中一种方式就是linear regression。</p>
+<p>在某些特殊情况下，如果我们能找到<span class="arithmatex">\(A^{-1}\)</span>，就能直接找到<span class="arithmatex">\(Ax=b\)</span>的解，<span class="arithmatex">\(x=A^{-1}b\)</span>。
+However, this is only possible if A is a square matrix and invertible, which is often not the case.</p>
+<p>在更多情况下，我们一般引入假设：
+A has linearly independent columns，或者rank of A is identical to its column rank，或者A的行列式不等于0，</p>
+<p>则此时<span class="arithmatex">\(A^T\cdot A\)</span>可逆</p>
+<p><img alt="" src="../Pasted%20image%2020221010231611.png"/>
+这样得到的<span class="arithmatex">\(x=(A^TA)^{-1}A^T\)</span>称为Moore-Penrose pseudo-inverse，which also corresponds to the minimum norm least-squares solution. （这也是最小二乘法的解）。</p>
+<hr/>
+<h4 id="rkaniff-ata-is-invertible">证明<span class="arithmatex">\(rk(A)=n\iff A^TA \, is \, invertible\)</span>.<a class="headerlink" href="#rkaniff-ata-is-invertible" title="Permanent link">¶</a></h4>
+<p>^401219</p>
+<p>证明<span class="arithmatex">\(rk(A)=n\iff A^TA \, is \, invertible\)</span>.
+（下面的证明需要用到chap2.7.3中的定理）
+<img alt="" src="../Pasted%20image%2020221014183337.png"/>
+上面证明了<span class="arithmatex">\(rk(A)=rk(A^TA)\)</span>，
+接下来只需证明<span class="arithmatex">\(rk(A^TA)=n\iff A^TA \, is \, invertible\)</span>。
+也就是只需证明为什么 矩阵full rank &lt;=&gt;矩阵可逆。
+这是chap2.6.2中的一个推论。
+所以证明结束。</p>
+<p>另外用上图中的思路其实可以证明：
+<span class="arithmatex">\(rk(A)=rk(A^T)=rk(A^TA)=rk(AA^T)\)</span>.
+这是一个挺常用的结论。
+就不证明了，了解思路就行。</p>
+<hr/>
+<p>disadvantage:
+- 计算量大
+- for reasons of numerical precision it is generally not recommended to compute the inverse or pseudo-inverse</p>
+<p>其他求解线性方程组的方法：
+- 高斯消元法尽管很重要，但对于变量个数巨大的场景不适用。
+- In practice, systems of many linear equations are solved indirectly</p>
+<h2 id="24-vector-spaces">2.4 Vector Spaces<a class="headerlink" href="#24-vector-spaces" title="Permanent link">¶</a></h2>
+<p>这一部分，将借助group来正式定义vector。</p>
+<h3 id="241-groups">2.4.1 Groups<a class="headerlink" href="#241-groups" title="Permanent link">¶</a></h3>
+<p><img alt="" src="../Pasted%20image%2020221010234012.png"/>
+group需要满足的条件：
+- 是operation的closure
+- operation满足结合律
+- 有单位元
+- 有逆元</p>
+<p>如果group另外还满足交换律，则为<strong>Abelian group</strong>。
+<img alt="" src="../Pasted%20image%2020221010234311.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221010234520.png"/></p>
+<h3 id="242-vector-spaces">2.4.2 Vector Spaces<a class="headerlink" href="#242-vector-spaces" title="Permanent link">¶</a></h3>
+<p>用group来定义vector space：
+<img alt="" src="../Pasted%20image%2020221010235642.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221010235935.png"/>
+注意：
+向量、矩阵和虚数的集合都是vector space，因为满足上面的性质。</p>
+<h3 id="243-vector-subspaces">2.4.3 Vector Subspaces<a class="headerlink" href="#243-vector-subspaces" title="Permanent link">¶</a></h3>
+<p>Intuitively, they are sets contained in the original vector space with the property that when we perform vector space operations on elements within this subspace, we will never leave it. In this sense, they are “closed”.</p>
+<p><img alt="" src="../Pasted%20image%2020221012144528.png"/>
+通常我们需要判断：
+- 零元在子空间内
+- 所有运算都在子空间内满足闭包</p>
+<p>一些结论：
+<img alt="" src="../Pasted%20image%2020221012144931.png"/>
+<img alt="" src="../Pasted%20image%2020221012144959.png"/></p>
+<h2 id="25-linear-independence">2.5 Linear Independence<a class="headerlink" href="#25-linear-independence" title="Permanent link">¶</a></h2>
+<p>现在有finite个vector，则它们的线性组合定义为：
+向量0永远可以写成一组vector的线性组合，但这是trivial线性组合。
+通常我们更关心线性组合系数不全为0的情况。
+<img alt="" src="../Pasted%20image%2020221012145251.png"/></p>
+<p>线性独立、线性相关是借助<span class="arithmatex">\(0=\sum^k_{i=1}\lambda_ix_i\)</span>来定义的。
+当这个式子只有trivial解，此时这些向量线性独立。
+如果存在non-trivial解，则这些向量线性相关。
+<img alt="" src="../Pasted%20image%2020221012150110.png"/></p>
+<p>当set中有0向量、有两个相等向量、某一向量可以用其他向量表示时，整个set线性相关。
+<img alt="" src="../Pasted%20image%2020221012150810.png"/></p>
+<p><strong>实际判断线性相关通常使用Gaussian Elimination</strong>：
+首先我们得到row echelon form (the reduced row-echelon form is unnecessary here):
+所有pivot column都与其<strong>左边</strong>的column线性独立。
+所有non-pivot column都可以表示为其左边的pivot column的线性组合。
+<img alt="" src="../Pasted%20image%2020221012151207.png"/></p>
+<p><strong>All column vectors are linearly independent if and only if all columns are pivot columns.</strong>
+<img alt="" src="../Pasted%20image%2020221012151341.png"/>
+注意这里说的是所有column都是pivot column，我们不关心row。
+<img alt="" src="../Pasted%20image%2020221012152050.png"/>
+比如说我们得到了这个row echelon form，就能得出结论这3个向量线性独立。</p>
+<p>假设我们现在有k个线性独立的向量<span class="arithmatex">\(b_i\)</span>，用这些向量组合出了m个新的向量（线性组合）<span class="arithmatex">\(x_i\)</span>，则我可以把整个过程简写为矩阵乘法的形式：
+<img alt="" src="../Pasted%20image%2020221012152726.png"/></p>
+<p>然后就引出一个问题，得到的这一组新向量<span class="arithmatex">\(x_i\)</span>是不是也是线性独立的？
+还是沿用至之前的方法，我们令x的线性组合等于零向量，
+<img alt="" src="../Pasted%20image%2020221012153210.png"/>
+然后看有没有non-trivial解。
+<img alt="" src="../Pasted%20image%2020221012153259.png"/>
+然后发现，当且仅当对b进行线性组合的系数向量<span class="arithmatex">\(\{\lambda_1,\lambda_2,...,\lambda_m\}\)</span>线性独立时，得到的这一组x才线性独立。</p>
+<p>如果用k个线性独立向量表示m&gt;k个新向量，则新向量有冗余，必定线性相关。
+<img alt="" src="../Pasted%20image%2020221012153537.png"/></p>
+<p>例子：
+注意下面的<span class="arithmatex">\(b_i\)</span>都是向量，而非标量。
+<img alt="" src="../Pasted%20image%2020221012153833.png"/>
+<img alt="" src="../Pasted%20image%2020221012153945.png"/></p>
+<h2 id="26-basis-and-rank">2.6 Basis and Rank<a class="headerlink" href="#26-basis-and-rank" title="Permanent link">¶</a></h2>
+<p>如果一个vector space中的所有向量都可以用集合A中的向量线性组合得到，称A为V的generating set，V为A的span。
+<img alt="" src="../Pasted%20image%2020221012154656.png"/></p>
+<p>线性独立的generating set最小，称为这个向量空间V的一个basis。
+<img alt="" src="../Pasted%20image%2020221012164824.png"/></p>
+<p>注意：一组线性独立的向量不一定是basis。
+<img alt="" src="../Pasted%20image%2020221012165204.png"/></p>
+<p>对于finite-dimensional vector spaces V，V的维度就等于V的basis vector的个数。
+<img alt="" src="../Pasted%20image%2020221012175432.png"/>
+（注意：vector space的维度是通过basis定义的。）
+<strong>区分vector的维度和vector space的维度。</strong>
+假如有一组向量是3维的，但它们只能张成一个2维平面，则这个张成空间是2维而不是3维。</p>
+<p><img alt="" src="../Pasted%20image%2020221012165830.png"/></p>
+<p>如何计算一个subspace的basis：
+<img alt="" src="../Pasted%20image%2020221012165914.png"/>
+将spanning vector写成矩阵A，A的echelon form pivot对应的column就是这个subspace的basis。</p>
+<h3 id="262-rank">2.6.2 Rank<a class="headerlink" href="#262-rank" title="Permanent link">¶</a></h3>
+<p>^e436c7</p>
+<p>rank其实就是一个矩阵的linearly independent columns的个数。
+<img alt="" src="../Pasted%20image%2020221012170324.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012170921.png"/></p>
+<p>对于<code>n*n</code> 的方阵，矩阵可逆当且仅当rank=n。
+<img alt="" src="../Pasted%20image%2020221012171710.png"/></p>
+<p>Ax=b有解当且仅当<span class="arithmatex">\(rk(A)=rk(A|b)\)</span>.
+<img alt="" src="../Pasted%20image%2020221012171722.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012172037.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012172126.png"/></p>
+<h2 id="27-linear-mappings">2.7 Linear Mappings<a class="headerlink" href="#27-linear-mappings" title="Permanent link">¶</a></h2>
+<p>现在有两个vector space V和W。我们想让V-&gt;W的映射可以保持向量所具有的“可以相加，可以标量乘法”的性质，满足这样条件的映射称为
+linear mapping 或者 linear transformation。
+<img alt="" src="../Pasted%20image%2020221012172719.png"/></p>
+<p>矩阵本身就是一种线性变换。此外，之前提到矩阵还可以表示向量的集合。
+可见矩阵有两种理解方式。
+When working with matrices, we have to keep in mind what the matrix represents: a linear mapping or a collection of vectors. </p>
+<p><img alt="" src="../Pasted%20image%2020221012173946.png"/>
+Injective: 不存在V中多个元素映射到W中同一元素的情况。
+Surjective: W中所有元素都能通过V中的某一元素映射得到。</p>
+<p>一旦一个映射满足Bijective，则这个映射存在对应的逆映射。
+<img alt="" src="../Pasted%20image%2020221012174336.png"/></p>
+<p>如果只考虑线性映射，则可以得到几个新概念：
+<img alt="" src="../Pasted%20image%2020221012174555.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012175136.png"/>
+对于两个finite-dimensional vector space V和W，
+V and W are isomorphic if and only if dim(V) = dim(W).</p>
+<p>V和W同构（线性映射+双射）&lt;=&gt; dim(V) = dim(W).</p>
+<p>Intuitively, this means <strong>that vector spaces of the same dimension are kind of the same thing</strong>, as they can be transformed into each other without incurring any loss.
+<img alt="" src="../Pasted%20image%2020221012175920.png"/></p>
+<p>同时由上面这个定理，我们发现mxn的矩阵和mn维的向量其实是同构的，因为它们之间可以通过线性双射的映射互相转换。</p>
+<p>一些性质：
+<img alt="" src="../Pasted%20image%2020221012180224.png"/>
+<img alt="" src="../Pasted%20image%2020221012180302.png"/></p>
+<h3 id="271-matrix-representation-of-linear-mappings">2.7.1 Matrix Representation of Linear Mappings<a class="headerlink" href="#271-matrix-representation-of-linear-mappings" title="Permanent link">¶</a></h3>
+<p>接下来的讨论中，basis之间的顺序很重要，
+B为向量空间V的n个basis组成的n-tuple，
+称为V的ordered basis。
+<img alt="" src="../Pasted%20image%2020221012180614.png"/></p>
+<p>注意区分下面这3种notation。
+<img alt="" src="../Pasted%20image%2020221012180830.png"/></p>
+<p>因为V中的任意元素x都可以被basis唯一表示，而B又是basis的有序tuple，则对于每个x我们都可以用一系列系数组成的vector表示。
+定义这个vector就是the coordinate vector/<strong>coordinate</strong> representation of x with respect to the ordered basis B.</p>
+<p>Transformation Matrix
+我们将V的每一个basis b 的<strong>映射后的向量</strong><span class="arithmatex">\(\Phi(b_j)\)</span>都表示为W的basis c的线性组合。
+（注意不是用c表示b，而是用c表示映射之后的<span class="arithmatex">\(\Phi(b_j)\)</span>。）
+<strong>换句话说，<span class="arithmatex">\(b_j\)</span>是起点，是自变量。<span class="arithmatex">\(\Phi(b_j)\)</span>是终点，是因变量。而我们想要用某种形式把这个映射过程记录下来，因此就记录下<span class="arithmatex">\(\Phi(b_j)\)</span>相对于basis c的坐标。这样一来，我们就将整个映射的过程“翻译”成了相对于basis c的坐标，记录到矩阵A中。</strong>
+然后把对应的系数存到一个矩阵A中，这个A就记录着V-&gt;W这个映射的信息。
+因为
+<img alt="" src="../Pasted%20image%2020221012183152.png"/></p>
+<p>因为我们是用c来表示b，表示所用的系数a，就是线性变换之后b的坐标。
+<strong>也就是说<span class="arithmatex">\(\Phi(b_j)\)</span>的坐标就是A的第j列的向量。</strong>
+<img alt="" src="../Pasted%20image%2020221012184737.png"/></p>
+<p>这个矩阵A可以用来把一个向量x相对于B的坐标“翻译”成相对于C的坐标。
+<img alt="" src="../Pasted%20image%2020221012190116.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012190316.png"/></p>
+<h3 id="272-basis-change">2.7.2 Basis Change<a class="headerlink" href="#272-basis-change" title="Permanent link">¶</a></h3>
+<p>接下来，来分析basis的选择对于变换矩阵A的影响。
+<img alt="" src="../Pasted%20image%2020221012204124.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012205853.png"/>
+<img alt="" src="../Pasted%20image%2020221012210822.png"/>
+证明就略过了，脚标太复杂，看不懂。
+直观理解：
+<img alt="" src="../Pasted%20image%2020221012210932.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012211819.png"/>
+<img alt="" src="../Pasted%20image%2020221012212124.png"/>
+<img alt="" src="../Pasted%20image%2020221012212412.png"/></p>
+<h4 id="_1">矩阵等价、矩阵相似<a class="headerlink" href="#_1" title="Permanent link">¶</a></h4>
+<p>^dbbab1</p>
+<p>Equivalent：
+上面的例子中的整个过程，其实就是在讲<span class="arithmatex">\(A\)</span>和<span class="arithmatex">\(\tilde{A}\)</span>其实是同一个线性变换。因此将其称之为equivalent。
+<img alt="" src="../Pasted%20image%2020221012212843.png"/></p>
+<p>Similar：
+注意下面定义中<span class="arithmatex">\(A\)</span>和<span class="arithmatex">\(\tilde{A}\)</span>都是<code>n*n</code>方阵，为啥呢？
+<img alt="" src="../Pasted%20image%2020221012214104.png"/>
+因为similar是equivalent的特殊情况。
+equivalent的场景是V-&gt;W，
+而similar是V-&gt;V，所以<span class="arithmatex">\(A\)</span>和<span class="arithmatex">\(\tilde{A}\)</span>都是V向V这个向量空间自己的映射。
+而为什么S=T？</p>
+<p><img alt="" src="../Pasted%20image%2020221012214900.png"/></p>
+<p>根据 <a href="https://math.stackexchange.com/a/2864164">So we are only choosing <em>one</em> basis for both sides. This restricts our freedom of action, but also preserves more properties of the matrix A.</a>，
+上图其实画的不对，应该是下图这样。
+V-&gt;V并不能得出S=T，
+之所以S=T，是因为我们在矩阵相似的场景中引入了更强的假设：
+linear transformation前后使用相同的basis，而不是两组不同的basis（B和C）。
+这样一来自然S是同一个S。
+<img alt="" src="../Pasted%20image%2020221012222357.png"/>
+根据上面的帖子，引入新的假设——
+"restricts our freedom of action, but also preserves more properties of the matrix A. Where 矩阵相似只能推出 <span class="arithmatex">\(rk(A)=rk(\tilde{A})\)</span>, now we get <span class="arithmatex">\(det(A)=det(\tilde{A}\)</span>), <span class="arithmatex">\(trace(A)=trace(\tilde{A}\)</span>) and the Eigenvalues of <span class="arithmatex">\(A\)</span> and <span class="arithmatex">\(\tilde{A}\)</span> coincide. "
+虽然设定更严格，但同时带来了更多的性质。</p>
+<p><img alt="" src="../Pasted%20image%2020221012223831.png"/>
+<img alt="" src="../Pasted%20image%2020221012223840.png"/></p>
+<h3 id="273-image-and-kernel">2.7.3 Image and Kernel<a class="headerlink" href="#273-image-and-kernel" title="Permanent link">¶</a></h3>
+<p>假设有一个线性映射<span class="arithmatex">\(\Phi:V\to W\)</span>，V和W为向量空间。
+<span class="arithmatex">\(ker(\Phi)\)</span>是V中被映射到W的零元的向量的集合。
+<span class="arithmatex">\(Im(\Phi)\)</span>是W中，所有可以经过映射得到的元素的集合 。
+<img alt="" src="../Pasted%20image%2020221012230351.png"/>
+<img alt="" src="../Pasted%20image%2020221012230403.png"/>
+性质：
+<img alt="" src="../Pasted%20image%2020221012231010.png"/></p>
+<p>假设W是V经过线性变换A得到的，那么这个映射的image就是A的columns的span，称为column space。
+<img alt="" src="../Pasted%20image%2020221012232323.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221012232435.png"/></p>
+<p>kernel/null space对应Ax=0的通解。
+<img alt="" src="../Pasted%20image%2020221012232509.png"/></p>
+<p>kernel和image的dimention之和等于V的dimention。
+<img alt="" src="../Pasted%20image%2020221012232724.png"/>
+上面这个定理的推论，懒得看了：
+<img alt="" src="../Pasted%20image%2020221012232848.png"/></p>
+<h2 id="28-affine-spaces">2.8 Affine Spaces<a class="headerlink" href="#28-affine-spaces" title="Permanent link">¶</a></h2>
+<p>接下来来讨论一些不经过origin的空间。因为不包含零元，这些空间不再是向量空间。
+<img alt="" src="../Pasted%20image%2020221013100617.png"/></p>
+<p>ML语境下很多时候linear和affine是混用的。
+<img alt="" src="../Pasted%20image%2020221013100744.png"/></p>
+<h3 id="281-affine-subspaces">2.8.1 Affine Subspaces<a class="headerlink" href="#281-affine-subspaces" title="Permanent link">¶</a></h3>
+<p>Affine Subspace：
+V是向量空间，U是V的子空间。<span class="arithmatex">\(x_0\)</span>是V的一个向量。
+则<span class="arithmatex">\(x_0\)</span>加上U中任一向量得到的结果的集合就称为affine subspace或者linear manifold。
+U称为direction或direction space，
+<span class="arithmatex">\(x_0\)</span>称为support point。
+在后面的章节称这样的subspace为hyerplane。
+<img alt="" src="../Pasted%20image%2020221013104115.png"/>
+其实相当于把子空间U中的所有元素都平移了<span class="arithmatex">\(x_0\)</span>。
+U本身一定包含零元，但平移之后可能不包含。因此affine subspace不一定是vector space。
+Examples of affine subspaces are points, lines, and planes in R3, which do not (necessarily) go through the origin.</p>
+<p>下面我们来定义parameters：
+（parameter是借助affine space定义的。）
+假设有一个k-dim affine space <span class="arithmatex">\(L=x_0+U\)</span>，我们可以用<strong>U</strong>的<strong>ordered</strong> basis <span class="arithmatex">\((b_1,b_2,...,b_k)\)</span>来uniquely表示这个affine space
+<img alt="" src="../Pasted%20image%2020221013105401.png"/>
+这种表示称为parametric equation of L，所用到的系数称为parameters.</p>
+<p>line，plane，hyperspace都是借助affine subspaces定义的：
+<img alt="" src="../Pasted%20image%2020221013111828.png"/>
+<img alt="" src="../Pasted%20image%2020221013111837.png"/>
+plane：
+U是两个线性独立的basis所张成的span，然后<span class="arithmatex">\(x_0\)</span>与U相加得到的affine subspace就是一个平面。</p>
+<p><img alt="" src="../Pasted%20image%2020221013112229.png"/></p>
+<p>Inhomogeneous systems of linear equations Ax=b对应的是一个维度为n-rk(A)的affine subspace，
+homogeneous equation systems Ax = 0对应的是vector subspace。
+<img alt="" src="../Pasted%20image%2020221013114059.png"/></p>
+<h3 id="282-affine-mappings">2.8.2 Affine Mappings<a class="headerlink" href="#282-affine-mappings" title="Permanent link">¶</a></h3>
+<p><img alt="" src="../Pasted%20image%2020221013190116.png"/>
+<img alt="" src="../Pasted%20image%2020221013190235.png"/></p>
+<p>affine mapping可以看作是线性映射<span class="arithmatex">\(V\to W\)</span>和translation <span class="arithmatex">\(W\to W\)</span>的组合。
+<img alt="" src="../Pasted%20image%2020221013190255.png"/></p>
+<p>affine mapping 组合之后还是affine mapping.
+<img alt="" src="../Pasted%20image%2020221013190416.png"/>
+<img alt="" src="../Pasted%20image%2020221013190458.png"/></p>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../assets/javascripts/bundle.51198bba.min.js"></script>
+<script src="../../javascripts/mathjax.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</body>
+</html>

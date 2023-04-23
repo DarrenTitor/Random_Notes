@@ -1,0 +1,953 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../chap2/" rel="prev"/>
+<link href="../chap4/" rel="next"/>
+<link href="../../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.4.2, mkdocs-material-9.1.7" name="generator"/>
+<title>chap3 Analytic Geometry - Some random ML notes</title>
+<link href="../../assets/stylesheets/main.ded33207.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.a0c5b2b5.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="cyan" data-md-color-primary="white" data-md-color-scheme="default" dir="ltr">
+<script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#chap3-analytic-geometry">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Some random ML notes" class="md-header__button md-logo" data-md-component="logo" href="../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Some random ML notes
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              chap3 Analytic Geometry
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="white" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="light-blue" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="deep-purple" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+</form>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Some random ML notes" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+    Some random ML notes
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+        Nothing special here
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          MML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+          MML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap1/">
+        chap 1: Introduction and Motivation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap2/">
+        chap2: Linear Algebra
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          chap3 Analytic Geometry
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+        chap3 Analytic Geometry
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#31-norms">
+    3.1 Norms
+  </a>
+<nav aria-label="3.1 Norms" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#32-inner-products">
+    3.2 Inner Products
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#321-dot-product">
+    3.2.1 Dot Product
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#322-general-inner-products">
+    3.2.2 General Inner Products
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#323-symmetric-positive-definite-matrices">
+    3.2.3 Symmetric, Positive Definite Matrices
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#33-lengths-and-distances">
+    3.3 Lengths and Distances
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#34-angles-and-orthogonality">
+    3.4 Angles and Orthogonality
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#35-orthonormal-basis">
+    3.5 Orthonormal Basis
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#36-orthogonal-complement">
+    3.6 Orthogonal Complement
+  </a>
+<nav aria-label="3.6 Orthogonal Complement" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#37-inner-product-of-functions">
+    3.7 Inner Product of Functions
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#38-orthogonal-projections">
+    3.8 Orthogonal Projections
+  </a>
+<nav aria-label="3.8 Orthogonal Projections" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#381-projection-onto-one-dimensional-subspaces-lines">
+    3.8.1 Projection onto One-Dimensional Subspaces (Lines)
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#382-projection-onto-general-subspaces">
+    3.8.2 Projection onto General Subspaces
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#383-gram-schmidt-orthogonalization">
+    3.8.3 Gram-Schmidt Orthogonalization
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#384-projection-onto-affine-subspaces">
+    3.8.4 Projection onto Affine Subspaces
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#39-rotations">
+    3.9 Rotations
+  </a>
+<nav aria-label="3.9 Rotations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#393-rotations-in-n-dimensions">
+    3.9.3 Rotations in n Dimensions
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap4/">
+        chap 4 - Matrix Decompositions
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap5/">
+        chap5 - Vector Calculus
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../chap6%20-%20Probability%20and%20Distributions/">
+        Probability and Distributions
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          NLP
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+          NLP
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+          Lecture
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+          Lecture
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1_1" id="__nav_3_1_1_label" tabindex="0">
+          HMM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_1_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_3_1_1">
+<span class="md-nav__icon md-icon"></span>
+          HMM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../NLP/Lecture/HMM/HMM/">
+        HMM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          Speech Synthesis
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_2">
+<span class="md-nav__icon md-icon"></span>
+          Speech Synthesis
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../NLP/Speech%20Synthesis/Speech%20Papers/">
+        Speech Papers
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          PGM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+          PGM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          Course
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_1">
+<span class="md-nav__icon md-icon"></span>
+          Course
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture01-Introduction/">
+        lecture01-Introduction
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture02-MRFrepresentation/">
+        lecture02-MRFrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture03-BNrepresentation/">
+        lecture03-BNrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture04-ExactInference/">
+        lecture04-ExactInference
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture05-ParameterEst/">
+        lecture05 ParameterEst
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture06-HMMCRF/">
+        lecture06 HMMCRF
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture07-VI1/">
+        lecture07-VI1
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture08-VI2/">
+        lecture08 VI2
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture09-MC/">
+        lecture09-MC
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture10-MCMC-opt/">
+        lecture10-MCMC-opt
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture11-NN/">
+        lecture11-NN
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/course/lecture12-DGM1/">
+        lecture12-DGM1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          Pyro
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_2">
+<span class="md-nav__icon md-icon"></span>
+          Pyro
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PGM/pyro/Untitled/">
+        An Introduction to Models in Pyro
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          PRML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+          PRML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          Chap1
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+          Chap1
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap1/chap1/">
+        Chap1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+          Chap10
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+          Chap10
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap10/Pasted%20image%2020210519194435.png/">
+        Pasted image 20210519194435.png
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap10/chap10/">
+        10. Approximate Inference
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          Chap2
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_3">
+<span class="md-nav__icon md-icon"></span>
+          Chap2
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap2/chap2/">
+        Chap2
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+          Chap3
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_4">
+<span class="md-nav__icon md-icon"></span>
+          Chap3
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap3/chap3/">
+        Chap3
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+          Chap8
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_5">
+<span class="md-nav__icon md-icon"></span>
+          Chap8
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap8/chap8/">
+        8. GRAPHICAL MODELS
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+          Chap9
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_6_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_6">
+<span class="md-nav__icon md-icon"></span>
+          Chap9
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../PRML/chap9/chap9/">
+        9. Mixture Models and EM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#31-norms">
+    3.1 Norms
+  </a>
+<nav aria-label="3.1 Norms" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#32-inner-products">
+    3.2 Inner Products
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#321-dot-product">
+    3.2.1 Dot Product
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#322-general-inner-products">
+    3.2.2 General Inner Products
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#323-symmetric-positive-definite-matrices">
+    3.2.3 Symmetric, Positive Definite Matrices
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#33-lengths-and-distances">
+    3.3 Lengths and Distances
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#34-angles-and-orthogonality">
+    3.4 Angles and Orthogonality
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#35-orthonormal-basis">
+    3.5 Orthonormal Basis
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#36-orthogonal-complement">
+    3.6 Orthogonal Complement
+  </a>
+<nav aria-label="3.6 Orthogonal Complement" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#37-inner-product-of-functions">
+    3.7 Inner Product of Functions
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#38-orthogonal-projections">
+    3.8 Orthogonal Projections
+  </a>
+<nav aria-label="3.8 Orthogonal Projections" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#381-projection-onto-one-dimensional-subspaces-lines">
+    3.8.1 Projection onto One-Dimensional Subspaces (Lines)
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#382-projection-onto-general-subspaces">
+    3.8.2 Projection onto General Subspaces
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#383-gram-schmidt-orthogonalization">
+    3.8.3 Gram-Schmidt Orthogonalization
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#384-projection-onto-affine-subspaces">
+    3.8.4 Projection onto Affine Subspaces
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#39-rotations">
+    3.9 Rotations
+  </a>
+<nav aria-label="3.9 Rotations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#393-rotations-in-n-dimensions">
+    3.9.3 Rotations in n Dimensions
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="chap3-analytic-geometry">chap3 Analytic Geometry<a class="headerlink" href="#chap3-analytic-geometry" title="Permanent link">¶</a></h1>
+<p><img alt="" src="../Pasted%20image%2020221013190749.png"/></p>
+<h2 id="31-norms">3.1 Norms<a class="headerlink" href="#31-norms" title="Permanent link">¶</a></h2>
+<p>norm 是一个将向量映射为实数的函数。
+norm需要满足可乘、三角不等式和非负这三个性质。
+<img alt="" src="../Pasted%20image%2020221013191557.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221013193045.png"/>
+<img alt="" src="../Pasted%20image%2020221013193051.png"/></p>
+<h3 id="32-inner-products">3.2 Inner Products<a class="headerlink" href="#32-inner-products" title="Permanent link">¶</a></h3>
+<h3 id="321-dot-product">3.2.1 Dot Product<a class="headerlink" href="#321-dot-product" title="Permanent link">¶</a></h3>
+<p>dot product只是inner product的一种形式。
+<img alt="" src="../Pasted%20image%2020221013193334.png"/></p>
+<h3 id="322-general-inner-products">3.2.2 General Inner Products<a class="headerlink" href="#322-general-inner-products" title="Permanent link">¶</a></h3>
+<p>之前提到的mapping都只有一个argument，
+接下来用到的映射<span class="arithmatex">\(\Omega\)</span> 有两个argument，并且对每个argument都是linear的，称为bilinear mapping。
+<img alt="" src="../Pasted%20image%2020221013193855.png"/></p>
+<p>假设<span class="arithmatex">\(\Omega\)</span> 是一个<span class="arithmatex">\(V\times V \to R\)</span> 的bilinear mapping，将同一个向量空间中的两个向量映射为一个实数，
+当两个argument的顺序不重要的时候，称<span class="arithmatex">\(\Omega\)</span> 是symmetric的。
+如果<span class="arithmatex">\(\Omega\)</span>满足：只要x不是0向量，<span class="arithmatex">\(\Omega(x,x)\)</span>就一定大于0；<span class="arithmatex">\(\Omega(0,0)=0\)</span>. 就称<span class="arithmatex">\(\Omega\)</span>是<strong>positive definite</strong>的。</p>
+<p><img alt="" src="../Pasted%20image%2020221013194403.png"/></p>
+<p>Inner product 的定义：
+A positive definite, symmetric bilinear mapping <span class="arithmatex">\(\Omega\)</span> 被称为V上的inner product。（正定+对称）.
+<img alt="" src="../Pasted%20image%2020221013195140.png"/></p>
+<p>V与inner product的组合称为inner product space。
+当使用dot product作为inner product时，称V为Euclidean vector space。
+<img alt="" src="../Pasted%20image%2020221013195308.png"/></p>
+<h3 id="323-symmetric-positive-definite-matrices">3.2.3 Symmetric, Positive Definite Matrices<a class="headerlink" href="#323-symmetric-positive-definite-matrices" title="Permanent link">¶</a></h3>
+<p>机器学习中，Symmetric, positive definite matrices很重要，而它们是通过inner product来定义的。</p>
+<p>假设向量空间V带有一个inner product运算<span class="arithmatex">\(\langle \cdot,\cdot\rangle\)</span> ，并且有一组ordered basis B。
+现有V中的两个向量x和y，则可以用B的线性组合表示这两个向量。
+<img alt="" src="../Pasted%20image%2020221013200835.png"/>
+<img alt="" src="../Pasted%20image%2020221013200902.png"/>
+<img alt="" src="../Pasted%20image%2020221013201008.png"/>
+通过上面可以看出，
+<img alt="" src="../Pasted%20image%2020221013210527.png"/>
+<span class="arithmatex">\(\hat{x}\)</span>和<span class="arithmatex">\(\hat{y}\)</span>是向量x和y相对于B的坐标，也就是说inner product本质上其实是A决定的。</p>
+<p>The symmetry of the inner product also means that A is symmetric. 
+innner product的对称决定了A也是对称的。</p>
+<p>然后，因为inner product的定义
+<img alt="" src="../Pasted%20image%2020221013212554.png"/>
+可以直接得出下面的式子：
+<span class="arithmatex">\(\forall x \in V\setminus \{0\}: x^TAx&gt;0\)</span>.<br/>
+<img alt="" src="../Pasted%20image%2020221013210819.png"/></p>
+<p>Symmetric, Positive Definite Matrix
+就是通过上面这个式子定义的：
+对于V中任意非0向量x都有<span class="arithmatex">\(x^TAx&gt;0\)</span>. 且如果A对称，
+则A被称为Symmetric, Positive Definite.
+<img alt="" src="../Pasted%20image%2020221013213618.png"/>
+也就是说，正定矩阵其实反映的是这个向量空间中所定义的inner product运算的性质。</p>
+<p><img alt="" src="../Pasted%20image%2020221013213939.png"/></p>
+<p>如果已知A是一个symmetric, positive definite矩阵了（对称，对非零向量<span class="arithmatex">\(x^TAx&gt;0\)</span>），则<span class="arithmatex">\(\hat{x}^TA\hat{y}\)</span>就是V上的一个inner product运算。
+<img alt="" src="../Pasted%20image%2020221013214321.png"/></p>
+<p>某一个映射是inner product，当且仅当
+<img alt="" src="../Pasted%20image%2020221013214552.png"/>
+这个映射操作可以被表示为<span class="arithmatex">\(\hat{x}^TA\hat{y}\)</span>且A为symmetric, positive definite矩阵。</p>
+<p>一些推论：
+<img alt="" src="../Pasted%20image%2020221013215021.png"/></p>
+<p>A的对角线元素都&gt;0.
+因为令x为standard basis时，<span class="arithmatex">\(x^TAx&gt;0\)</span>其实就约束着A的对角线上的元素&gt;0.
+<img alt="" src="../Pasted%20image%2020221013215116.png"/></p>
+<h3 id="33-lengths-and-distances">3.3 Lengths and Distances<a class="headerlink" href="#33-lengths-and-distances" title="Permanent link">¶</a></h3>
+<p>所有inner product运算开根号之后都满足norm运算的要求，也就是说所有inner product开根号之后都是一个norm运算。
+<img alt="" src="../Pasted%20image%2020221013222228.png"/>
+但是并不是所有norm都有对应的inner product，比如L1-norm。</p>
+<p>定义distance：
+<img alt="" src="../Pasted%20image%2020221013222918.png"/>
+<img alt="" src="../Pasted%20image%2020221013222930.png"/>
+<img alt="" src="../Pasted%20image%2020221013223608.png"/></p>
+<p>尽管 inner product与metric都是将两个向量映射为一个实数，而且都是symmetric, positive definite的，也都满足三角不等式。
+但是，它们的behavior正好相反
+<img alt="" src="../Pasted%20image%2020221013223546.png"/></p>
+<h2 id="34-angles-and-orthogonality">3.4 Angles and Orthogonality<a class="headerlink" href="#34-angles-and-orthogonality" title="Permanent link">¶</a></h2>
+<p>inner products also capture the geometry of a vector space by defining the angle ω between two vectors.</p>
+<p>由于柯西不等式：
+<img alt="" src="../Pasted%20image%2020221014004346.png"/>
+因此有
+<img alt="" src="../Pasted%20image%2020221014004443.png"/>
+由此就可以定义两个向量之间的夹角angle。
+<img alt="" src="../Pasted%20image%2020221014011909.png"/></p>
+<p>正交：
+两个向量inner product为0称为orthogonal，
+正交+两个向量都是单位向量，称为orthonormal。
+<img alt="" src="../Pasted%20image%2020221014133616.png"/></p>
+<p>下面这个例子中，两个向量在使用dot product时正交，
+但使用
+<img alt="" src="../Pasted%20image%2020221014134138.png"/>
+另一个inner product时不正交。
+<img alt="" src="../Pasted%20image%2020221014134050.png"/>
+<img alt="" src="../Pasted%20image%2020221014134058.png"/></p>
+<p>Orthogonal Matrix：
+<img alt="" src="../Pasted%20image%2020221014134436.png"/>
+当矩阵的每一列都orthonormal的（注意不是orthogonal），向量与自己作inner product得到1，其余得到0。因此
+<img alt="" src="../Pasted%20image%2020221014134618.png"/>
+然后就可以直接推出
+<img alt="" src="../Pasted%20image%2020221014134631.png"/></p>
+<p>注意：
+根据上面的定义，虽然我们叫A“orthogonal matrix”，但其实A是“orthonormal”的，这只是命名的问题，有点怪。
+注意以后提到“orthogonal matrix”，就隐含了每个column都是orthonormal的，是单位矩阵。</p>
+<p>由下面这个式子可以看出，某一向量x在经过一个orthogonal matrix的变换之后，其norm不会改变，本质上是因为<span class="arithmatex">\(A^TA=I\)</span>。
+<img alt="" src="../Pasted%20image%2020221014135014.png"/></p>
+<p>此外，由下面这个式子可以看出，对x、y同时施加orthogonal matrix的变换，变换前后两个向量的夹角也不会改变。
+<img alt="" src="../Pasted%20image%2020221014135416.png"/></p>
+<p>其实orthogonal matrix对应的是旋转变换（with the possibility of flips）.</p>
+<h2 id="35-orthonormal-basis">3.5 Orthonormal Basis<a class="headerlink" href="#35-orthonormal-basis" title="Permanent link">¶</a></h2>
+<p>之前我们提到n维向量空间需要n个线性独立的向量（basis），
+现在我们增加两个约束，
+basis正交，basis为单位向量（也就是说是orthonormal basis），看看能得出什么性质。</p>
+<p><img alt="" src="../Pasted%20image%2020221014141543.png"/></p>
+<p>我们可以通过高斯消元法得到一个span的orthonormal basis，
+使用的augmented matrix为<span class="arithmatex">\(\hat{B}\hat{B}^T|\hat{B}\)</span>.
+直观上也不难理解，我们用高斯消元法求得一个<span class="arithmatex">\(\hat{B}^T\)</span>，而由于<span class="arithmatex">\(\hat{B}^T\)</span>所处的位置，需要<span class="arithmatex">\(\hat{B}\hat{B}^T=\hat{B}\)</span>，
+也就是说<span class="arithmatex">\(\hat{B}^T=\hat{B}^{-1}\)</span>，因此高斯消元得到的矩阵是正交矩阵，得到的向量是orthonormal basis。
+<img alt="" src="../Pasted%20image%2020221014141826.png"/></p>
+<h2 id="36-orthogonal-complement">3.6 Orthogonal Complement<a class="headerlink" href="#36-orthogonal-complement" title="Permanent link">¶</a></h2>
+<p>Having defined orthogonality, we will now look at vector spaces that are orthogonal to each other. </p>
+<p>假设V是D维向量空间，U是V的M维子空间，
+则V中那些与U中所有向量都正交的向量组成的集合（准确的说是子空间），就是U的orthogonal complement <span class="arithmatex">\(U^\perp\)</span>.
+并且它的维度是D-M。
+<img alt="" src="../Pasted%20image%2020221014142834.png"/></p>
+<p>并且V中的任意向量都可以用<span class="arithmatex">\(U\)</span>的basis和<span class="arithmatex">\(U^\perp\)</span>的basis（的并集）的线性组合来表示。
+<img alt="" src="../Pasted%20image%2020221014143647.png"/></p>
+<p>假如在三维空间中，U是一个二维平面，则与U正交的单位向量ω就是U的orthonormal complement这个子空间的basis。我们称ω是U的法向量（normal vector）。
+<img alt="" src="../Pasted%20image%2020221014144021.png"/></p>
+<h3 id="37-inner-product-of-functions">3.7 Inner Product of Functions<a class="headerlink" href="#37-inner-product-of-functions" title="Permanent link">¶</a></h3>
+<p>In the following, we will look at an example of inner products of a different type of vectors: inner products of functions.
+我们将向量推广到函数，来讨论function之间的inner product和function之间的orthogonal。</p>
+<p>We can think of a vector <span class="arithmatex">\(x\in \mathbb{R}^n\)</span>  as a function with n function values.
+然后，将有限维向量推广到无限维，将离散的一个个argument推广到一个连续的定义域，
+这样一来原本的inner product需要的求和就可以推广到求定积分。</p>
+<p><img alt="" src="../Pasted%20image%2020221014144947.png"/>
+<img alt="" src="../Pasted%20image%2020221014145007.png"/></p>
+<p>当定积分结果为0，则称这两个函数为orthogonal.
+与有限维向量求inner product不同，对两个函数求inner product求积分，结果有可能diverge（无穷大），因此这里需要数学上有其他要求。但本书不涉及这些。
+<img alt="" src="../Pasted%20image%2020221014145659.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221014145920.png"/></p>
+<h2 id="38-orthogonal-projections">3.8 Orthogonal Projections<a class="headerlink" href="#38-orthogonal-projections" title="Permanent link">¶</a></h2>
+<p>we can project the original high-dimensional data onto a lower-dimensional feature space and work in this lower-dimensional space to learn more about the dataset and extract relevant patterns</p>
+<p>projection的定义：
+有点难理解，如果对V进行两次变换的结果，和进行一个变换的结果相同，则这个变换称为投影。
+就比如将三维空间中的一些向量投影到xy平面上，投影一次的结果，和“先投影一次，再投影一次”的结果是相同的。
+<img alt="" src="../Pasted%20image%2020221014151529.png"/></p>
+<p>线性变换都可以用矩阵描述，
+描述投影操作的矩阵称为projection matrices。
+需要满足<span class="arithmatex">\(P_\pi^2=P_\pi\)</span>.
+<img alt="" src="../Pasted%20image%2020221014151937.png"/></p>
+<p>下面我们讨论将inner product spaces投影到subspace中。
+其中inner product我们默认全部使用dot product。</p>
+<h3 id="381-projection-onto-one-dimensional-subspaces-lines">3.8.1 Projection onto One-Dimensional Subspaces (Lines)<a class="headerlink" href="#381-projection-onto-one-dimensional-subspaces-lines" title="Permanent link">¶</a></h3>
+<p>首先我们有一条过原点的直线，basis为b。这条直线可以看作是basis b张成的1-dim subspace U。
+当我们将向量x投影到U时，其实就是寻找投影到U之后的向量<span class="arithmatex">\(\pi_U(x)\in U\)</span>中，哪一个距离x最近。
+<img alt="" src="../Pasted%20image%2020221014152622.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221014154935.png"/>
+然后：
+<img alt="" src="../Pasted%20image%2020221014155246.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221014155614.png"/>
+<img alt="" src="../Pasted%20image%2020221014155856.png"/></p>
+<p>从上面的式子可以直接观察出<span class="arithmatex">\(P_\pi\)</span>是symmetric的。</p>
+<p><span class="arithmatex">\(P_\pi\)</span>可以将任意向量投影到b所张成的一维子空间（直线）上。</p>
+<p>注意，投影的结果仍然是n维向量，而不是标量。
+但是，我们其实可以相对于basis b直接用<span class="arithmatex">\(\lambda\)</span>来表达投影后的结果。
+<img alt="" src="../Pasted%20image%2020221014160120.png"/>
+<img alt="" src="../Pasted%20image%2020221014160321.png"/></p>
+<p>chap4将会讲到，<span class="arithmatex">\(\pi_U(x)\)</span>其实是矩阵<span class="arithmatex">\(P_\pi\)</span>的一个特征向量，其对应的特征值是1.
+<img alt="" src="../Pasted%20image%2020221014160335.png"/></p>
+<h3 id="382-projection-onto-general-subspaces">3.8.2 Projection onto General Subspaces<a class="headerlink" href="#382-projection-onto-general-subspaces" title="Permanent link">¶</a></h3>
+<p>下面我们从投影到1维直线U推广到投影到m维空间U。
+假设U有一组ordered basis <span class="arithmatex">\(B=(b_1,b_2,...,b_m)\)</span>，则将x投影到U中之后可以用B来uniquely得到<span class="arithmatex">\(\pi_U(x)\)</span>的坐标：
+<img alt="" src="../Pasted%20image%2020221014172206.png"/>
+<img alt="" src="../Pasted%20image%2020221014172227.png"/></p>
+<p>然后我们想让<span class="arithmatex">\(\pi_U(x)\)</span>与<span class="arithmatex">\(x\)</span>越近越好，
+这样一来就可以推出<span class="arithmatex">\(\pi_U(x)-x\)</span>需要与B正交。
+<img alt="" src="../Pasted%20image%2020221014173105.png"/></p>
+<p>写成矩阵的形式就得到了下面的式子：
+<img alt="" src="../Pasted%20image%2020221014173327.png"/>
+<img alt="" src="../Pasted%20image%2020221014173602.png"/>
+所以normal equation其实表示的就是投影操作。</p>
+<p>并且因为<span class="arithmatex">\(B=(b_1,b_2,...,b_m)\)</span>本身是basis，column一定线性独立，因此<span class="arithmatex">\(B^TB\)</span>一定是可逆的。<a href="All%20About%20Data%20Science/MML/chap2.md#^401219">证明</a>
+因此可以解出投影之后向量的坐标<span class="arithmatex">\(\lambda\)</span>。
+<img alt="" src="../Pasted%20image%2020221014185540.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221014185922.png"/>
+<img alt="" src="../Pasted%20image%2020221014185928.png"/></p>
+<p>有了<span class="arithmatex">\(\lambda\)</span>，我们就可以表示出<span class="arithmatex">\(\pi_U(x)\)</span>，最终表示出projection matrix <span class="arithmatex">\(P_\pi\)</span>。
+<img alt="" src="../Pasted%20image%2020221014190057.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020221014190435.png"/></p>
+<p>当Ax=b无解时，我们可以借助投影得到一个近似解。
+Ax=b无解，说明b不位于A的column的span中。
+这时我们可以借助投影找到A的span中离b最近的一个，也就是将b投影到A的span中。
+如果这里的inner product使用的时dot product，则这个求解过程其实就是最小二乘法。
+<img alt="" src="../Pasted%20image%2020221014191327.png"/></p>
+<p>当B是Orthonormal Basis时，上面得到的<span class="arithmatex">\(\lambda\)</span>的式子可以进一步简化。
+<img alt="" src="../Pasted%20image%2020221014191854.png"/></p>
+<h3 id="383-gram-schmidt-orthogonalization">3.8.3 Gram-Schmidt Orthogonalization<a class="headerlink" href="#383-gram-schmidt-orthogonalization" title="Permanent link">¶</a></h3>
+<h3 id="384-projection-onto-affine-subspaces">3.8.4 Projection onto Affine Subspaces<a class="headerlink" href="#384-projection-onto-affine-subspaces" title="Permanent link">¶</a></h3>
+<p>假设有affine space <span class="arithmatex">\(L = x_0+U\)</span>，而我们想要把x投影到L上。
+于是我们将其转化为把<span class="arithmatex">\(x-x_0\)</span>投影到<span class="arithmatex">\(L-x_0=U\)</span>的任务，这样一来就成了投影到向量空间的任务。投影结束之后，再加上<span class="arithmatex">\(x_0\)</span>将结果翻译回L。
+<img alt="" src="../Pasted%20image%2020221014204414.png"/></p>
+<p>而这个转换的过程并不会影响x到L的距离。
+<img alt="" src="../Pasted%20image%2020221014204444.png"/></p>
+<h2 id="39-rotations">3.9 Rotations<a class="headerlink" href="#39-rotations" title="Permanent link">¶</a></h2>
+<p>A rotation is a linear mapping (more specifically, an automorphism of rotation a Euclidean vector space) that rotates a plane by an angle θ about the origin。</p>
+<h3 id="393-rotations-in-n-dimensions">3.9.3 Rotations in n Dimensions<a class="headerlink" href="#393-rotations-in-n-dimensions" title="Permanent link">¶</a></h3>
+<p>三维空间中的旋转：固定住一个轴不动，将垂直于这个固定轴的平面进行旋转。
+推广到n维空间就是固定住n-2维不动。
+<img alt="" src="../Pasted%20image%2020221014205028.png"/>
+<img alt="" src="../Pasted%20image%2020221014205408.png"/>
+<img alt="" src="../Pasted%20image%2020221014205413.png"/></p>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../assets/javascripts/bundle.51198bba.min.js"></script>
+<script src="../../javascripts/mathjax.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</body>
+</html>

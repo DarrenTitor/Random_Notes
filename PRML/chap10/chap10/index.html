@@ -1,0 +1,1229 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../Pasted%20image%2020210519194435.png/" rel="prev"/>
+<link href="../../chap2/chap2/" rel="next"/>
+<link href="../../../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.4.2, mkdocs-material-9.1.7" name="generator"/>
+<title>10. Approximate Inference - Some random ML notes</title>
+<link href="../../../assets/stylesheets/main.ded33207.min.css" rel="stylesheet"/>
+<link href="../../../assets/stylesheets/palette.a0c5b2b5.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="cyan" data-md-color-primary="white" data-md-color-scheme="default" dir="ltr">
+<script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#10-approximate-inference">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Some random ML notes" class="md-header__button md-logo" data-md-component="logo" href="../../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Some random ML notes
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              10. Approximate Inference
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="white" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="light-blue" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="deep-purple" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+</form>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Some random ML notes" class="md-nav__button md-logo" data-md-component="logo" href="../../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+    Some random ML notes
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../..">
+        Nothing special here
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          MML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+          MML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap1/">
+        chap 1: Introduction and Motivation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap2/">
+        chap2: Linear Algebra
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap3/">
+        chap3 Analytic Geometry
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap4/">
+        chap 4 - Matrix Decompositions
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap5/">
+        chap5 - Vector Calculus
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap6%20-%20Probability%20and%20Distributions/">
+        Probability and Distributions
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          NLP
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+          NLP
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+          Lecture
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+          Lecture
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1_1" id="__nav_3_1_1_label" tabindex="0">
+          HMM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_1_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_3_1_1">
+<span class="md-nav__icon md-icon"></span>
+          HMM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../NLP/Lecture/HMM/HMM/">
+        HMM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          Speech Synthesis
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_2">
+<span class="md-nav__icon md-icon"></span>
+          Speech Synthesis
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../NLP/Speech%20Synthesis/Speech%20Papers/">
+        Speech Papers
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          PGM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+          PGM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          Course
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_1">
+<span class="md-nav__icon md-icon"></span>
+          Course
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture01-Introduction/">
+        lecture01-Introduction
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture02-MRFrepresentation/">
+        lecture02-MRFrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture03-BNrepresentation/">
+        lecture03-BNrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture04-ExactInference/">
+        lecture04-ExactInference
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture05-ParameterEst/">
+        lecture05 ParameterEst
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture06-HMMCRF/">
+        lecture06 HMMCRF
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture07-VI1/">
+        lecture07-VI1
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture08-VI2/">
+        lecture08 VI2
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture09-MC/">
+        lecture09-MC
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture10-MCMC-opt/">
+        lecture10-MCMC-opt
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture11-NN/">
+        lecture11-NN
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture12-DGM1/">
+        lecture12-DGM1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          Pyro
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_2">
+<span class="md-nav__icon md-icon"></span>
+          Pyro
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/pyro/Untitled/">
+        An Introduction to Models in Pyro
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          PRML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+          PRML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          Chap1
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+          Chap1
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap1/chap1/">
+        Chap1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+          Chap10
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+          Chap10
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../Pasted%20image%2020210519194435.png/">
+        Pasted image 20210519194435.png
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          10. Approximate Inference
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+        10. Approximate Inference
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#101-variational-inference">
+    10.1. Variational Inference
+  </a>
+<nav aria-label="10.1. Variational Inference" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1011-factorized-distributions">
+    10.1.1 Factorized distributions
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1012-properties-of-factorized-approximations">
+    10.1.2 Properties of factorized approximations
+  </a>
+<nav aria-label="10.1.2 Properties of factorized approximations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#factorized-gaussian">
+    factorized Gaussian
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1013-example-the-univariate-gaussian">
+    10.1.3 Example: The univariate Gaussian
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#102-illustration-variational-mixture-of-gaussians">
+    10.2. Illustration: Variational Mixture of Gaussians
+  </a>
+<nav aria-label="10.2. Illustration: Variational Mixture of Gaussians" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1021-variational-distribution">
+    10.2.1 Variational distribution
+  </a>
+<nav aria-label="10.2.1 Variational distribution" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#qz">
+    q(Z)
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#q">
+    q(π, µ, Λ)
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1022-variational-lower-bound">
+    10.2.2 Variational lower bound
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1023-predictive-density">
+    10.2.3 Predictive density
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1024-determining-the-number-of-components">
+    10.2.4 Determining the number of components
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1025-induced-factorizations">
+    10.2.5 induced factorizations
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#103-variational-linear-regression">
+    10.3. Variational Linear Regression
+  </a>
+<nav aria-label="10.3. Variational Linear Regression" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1031-variational-distribution">
+    10.3.1 Variational distribution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1032-predictive-distribution">
+    10.3.2 Predictive distribution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1033-lower-bound">
+    10.3.3 Lower bound
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#104-exponential-family-distributions">
+    10.4. Exponential Family Distributions
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#105-local-variational-methods">
+    10.5. Local Variational Methods
+  </a>
+<nav aria-label="10.5. Local Variational Methods" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#example-exp-x">
+    example: exp{-x}
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#generalize">
+    generalize
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#106-variational-logistic-regression">
+    10.6. Variational Logistic Regression
+  </a>
+<nav aria-label="10.6. Variational Logistic Regression" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1061-variational-posterior-distribution">
+    10.6.1 Variational posterior distribution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1062-optimizing-the-variational-parameters">
+    10.6.2 Optimizing the variational parameters
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          Chap2
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_3">
+<span class="md-nav__icon md-icon"></span>
+          Chap2
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap2/chap2/">
+        Chap2
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+          Chap3
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_4">
+<span class="md-nav__icon md-icon"></span>
+          Chap3
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap3/chap3/">
+        Chap3
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+          Chap8
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_5">
+<span class="md-nav__icon md-icon"></span>
+          Chap8
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap8/chap8/">
+        8. GRAPHICAL MODELS
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+          Chap9
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_6_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_6">
+<span class="md-nav__icon md-icon"></span>
+          Chap9
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap9/chap9/">
+        9. Mixture Models and EM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#101-variational-inference">
+    10.1. Variational Inference
+  </a>
+<nav aria-label="10.1. Variational Inference" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1011-factorized-distributions">
+    10.1.1 Factorized distributions
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1012-properties-of-factorized-approximations">
+    10.1.2 Properties of factorized approximations
+  </a>
+<nav aria-label="10.1.2 Properties of factorized approximations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#factorized-gaussian">
+    factorized Gaussian
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1013-example-the-univariate-gaussian">
+    10.1.3 Example: The univariate Gaussian
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#102-illustration-variational-mixture-of-gaussians">
+    10.2. Illustration: Variational Mixture of Gaussians
+  </a>
+<nav aria-label="10.2. Illustration: Variational Mixture of Gaussians" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1021-variational-distribution">
+    10.2.1 Variational distribution
+  </a>
+<nav aria-label="10.2.1 Variational distribution" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#qz">
+    q(Z)
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#q">
+    q(π, µ, Λ)
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1022-variational-lower-bound">
+    10.2.2 Variational lower bound
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1023-predictive-density">
+    10.2.3 Predictive density
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1024-determining-the-number-of-components">
+    10.2.4 Determining the number of components
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1025-induced-factorizations">
+    10.2.5 induced factorizations
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#103-variational-linear-regression">
+    10.3. Variational Linear Regression
+  </a>
+<nav aria-label="10.3. Variational Linear Regression" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1031-variational-distribution">
+    10.3.1 Variational distribution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1032-predictive-distribution">
+    10.3.2 Predictive distribution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1033-lower-bound">
+    10.3.3 Lower bound
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#104-exponential-family-distributions">
+    10.4. Exponential Family Distributions
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#105-local-variational-methods">
+    10.5. Local Variational Methods
+  </a>
+<nav aria-label="10.5. Local Variational Methods" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#example-exp-x">
+    example: exp{-x}
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#generalize">
+    generalize
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#106-variational-logistic-regression">
+    10.6. Variational Logistic Regression
+  </a>
+<nav aria-label="10.6. Variational Logistic Regression" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1061-variational-posterior-distribution">
+    10.6.1 Variational posterior distribution
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1062-optimizing-the-variational-parameters">
+    10.6.2 Optimizing the variational parameters
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="10-approximate-inference">10. Approximate Inference<a class="headerlink" href="#10-approximate-inference" title="Permanent link">¶</a></h1>
+<p>motivation:
+我们想要求posterior distribution p(Z|X) of the latent variables Z given the observed (visible) data variables X
+但是，
+对于连续变量，the required integrations may not have closed-form analytical solutions, while the dimensionality of the space and the complexity of the integrand may prohibit numerical integration
+对于离散变量，the marginalizations involve summing over all possible configurations of the hidden variables. There may be exponentially many hidden states so that exact calculation is prohibitively expensive</p>
+<p>因此我们需要approximation schemes，而这分为两类：stochastic or deterministic approximations
+<strong>Stochastic</strong> techniques such as Markov chain Monte Carlo, 推广了Bayesian methods的使用。Bayesian methods在有无限的运算资源时能给出精确解。而这些近似方法可以在有限的时间内给出解。In practice, sampling methods can be <strong>computationally demanding</strong>, often limiting their use to small-scale problems. Also, it can be <strong>difficult to know whether a sampling scheme is generating independent samples</strong> from the required distribution.
+这章讲的是<strong>deterministic</strong> approximation schemes, some of which scale well to large applications. 但它们不能给出精确解</p>
+<h2 id="101-variational-inference">10.1. Variational Inference<a class="headerlink" href="#101-variational-inference" title="Permanent link">¶</a></h2>
+<p>a <strong>functional</strong> is a mapping that takes a function as the input and that returns the value of the functional as the output.
+一个例子就是entropy <span class="arithmatex">\(H[p]\)</span>，接受p(x)作为input，返回一个量作为输出
+<img alt="" src="../Pasted%20image%2020210502091838.png"/>
+a functional derivative expresses how the value of the functional changes in response to infinitesimal changes to the input function</p>
+<p>variational methods本身没有什么近似的元素。但是通常会在求解的过程中限制function的种类和范围, 比如只考虑quadratic functions或者只考虑某些fixed basis functions的线性组合. 在probabilistic inference中，可能会有factorization assumptions</p>
+<hr/>
+<p>variational optimization用于inference的例子：
+我们有一个fully Bayesian model，所有latent variable记作Z，所有observed variables记作X，X由N个i.i.d数据组成。
+我们设了joint distribution p(X, Z), 目标是得到近似的posterior p(Z|X)和近似的evidence p(X)</p>
+<p>仿照之前EM的做法，我们从log marginal中拆出来KL散度，唯一与之前不同的是，我们这里没有出现theta，因为在EM中，theta都是observed的（可以去看GMM对应的graph），而在这里，the parameters are now stochastic variables and are absorbed into Z。
+<img alt="" src="../Pasted%20image%2020210502152711.png"/></p>
+<p>和之前的Estep一样，我们关于q对L进行maximize（顺便一提因为没有θ，所以没有M-step了）。如果我们对于q(Z)没有限制，选啥都行的话，lower bound达到最大时，KL散度为0达到, q(Z)就等于真正的posteriorp(Z|X). 这样的结果虽然是对的，但是可能会导致p(Z|X)太复杂，没法算。</p>
+<p><strong>We therefore consider instead a restricted family of distributions q(Z) and then seek the member of this family for which the KL divergence is minimized.</strong> 我们想让对p(Z)加一些限制，使得它们都“好算”，同时又能对真正的posterior足够近似
+(下面这段，因为模型简化，所以泛化能力变强，因此就解决了过拟合的问题)
+In particular, there is no ‘over-fitting’ associated with highly flexible distributions. Using more flexible approximations simply allows us to approach the true posterior distribution more closely.</p>
+<p>其中一种约束q的方法是使用parametric distribution，如果q(Z|ω) governed by a set of parameters ω，那么L就成了ω的function。我们就可以把常用的优化方法用到L上面了</p>
+<h3 id="1011-factorized-distributions">10.1.1 Factorized distributions<a class="headerlink" href="#1011-factorized-distributions" title="Permanent link">¶</a></h3>
+<p>现在介绍另一种限制q(Z)的方法：
+这里的Z其实是<span class="arithmatex">\(\mathrm{Z}\)</span>, 是所有的latent variable，这里就简写了
+Suppose we partition the elements of Z into disjoint groups that we denote by <span class="arithmatex">\(Z_i\)</span> where i =1,...,M. We then assume that the q distribution factorizes with respect to these groups, so that
+<img alt="" src="../Pasted%20image%2020210502162556.png"/></p>
+<p>注意我们对于<span class="arithmatex">\(q_i(Z)\)</span>的具体形式没有进一步的假设，就只是假设q(Z)能拆开而已
+This factorized form of variational inference corresponds to an approximation framework developed in physics called <strong>mean field theory</strong></p>
+<p>在所有“能拆”的q(Z)中，我们要找能使L(也就是lower bound)最大的。我们可以分别对每一个<span class="arithmatex">\(q_i(Z)\)</span>都轮流优化，也就是优化某一个，固定其他的，然后轮流进行。</p>
+<p>把<span class="arithmatex">\(q_i(Z)\)</span>连乘代入到L的定义式中，可以得到
+<img alt="" src="../Pasted%20image%2020210502165955.png"/>
+这里定义了一个新的distribution<span class="arithmatex">\(\hat{p}(X,Z_j)\)</span>：
+<img alt="" src="../Pasted%20image%2020210502170219.png"/>
+然后又定义了一个<span class="arithmatex">\(E_{i\neq j}[...]\)</span>，代表这个期望在算的过程中把j这项去掉了。注意下面这个式子算lnp(X,Z)的“期望”，是对于Z而言的，因此乘的是Z的分布q
+<img alt="" src="../Pasted%20image%2020210502170435.png"/></p>
+<p>而具体固定住其他的、只优化j的过程也有简便计算，我们想maximize L，可以看到L的这个形式：
+<img alt="" src="../Pasted%20image%2020210502170959.png"/>
+就是一个negative Kullback-Leibler divergence between <span class="arithmatex">\(q_j(Z_j)\)</span> and <span class="arithmatex">\(\hat{p}(X,Z_j)\)</span>，因此<span class="arithmatex">\(q_j(Z_j)=\hat{p}(X,Z_j)\)</span>的时候KL散度最小为0，L最大</p>
+<p>此时我们得到一个optimal solution<span class="arithmatex">\(q^*_j(Z_j)\)</span>的通用结论：
+<img alt="" src="../Pasted%20image%2020210502171340.png"/>
+Note:
+观察一下这个式子，It says that <strong>the log of the optimal solution for factor <span class="arithmatex">\(q_j\)</span> is obtained simply by considering the log of the joint distribution over all hidden and visible variables and then taking the expectation with respect to all of the other factors <span class="arithmatex">\(\{q_i\}\space for\space i\neq j\)</span>.</strong>
+而上面的这个常数项是normalization term，通常不会硬算这个const，而是先算前面这项，然后观察出const
+<img alt="" src="../Pasted%20image%2020210502174430.png"/></p>
+<p>基本流程是先适当地初始化各个<span class="arithmatex">\(q_i(Z_i)\)</span>，然后开始循环，依次更新<span class="arithmatex">\(q_i(Z_i)\)</span>
+Convergence is guaranteed because bound is convex with respect to each of the factors <span class="arithmatex">\(q_i(Z_i)\)</span></p>
+<h3 id="1012-properties-of-factorized-approximations">10.1.2 Properties of factorized approximations<a class="headerlink" href="#1012-properties-of-factorized-approximations" title="Permanent link">¶</a></h3>
+<p>(Let us consider for a moment the problem of approximating a general distribution by a factorized distribution)</p>
+<h4 id="factorized-gaussian">factorized Gaussian<a class="headerlink" href="#factorized-gaussian" title="Permanent link">¶</a></h4>
+<p>假设有
+<img alt="" src="../Pasted%20image%2020210502181008.png"/>
+two correlated variables z =(z1,z2) in which the mean and precision have elements
+<img alt="" src="../Pasted%20image%2020210502181108.png"/>
+并且因为是对称矩阵，<span class="arithmatex">\(\Lambda_{12}=\Lambda_{21}\)</span></p>
+<p>现在我们想要用q(z)= q1(z1)q2(z2)近似p(z)
+想要求<span class="arithmatex">\(q^*_j(Z_j)\)</span>，直接代入之前的通用表达式，注意E中只留下与<span class="arithmatex">\(z_1\)</span>有关的部分，其他的扔到const里
+<img alt="" src="../Pasted%20image%2020210502223930.png"/></p>
+<p>然后我们发现<span class="arithmatex">\(lnq^*_j(Z_j)\)</span>是quadratic的，因此<span class="arithmatex">\(q^*_j(Z_j)\)</span>可以看作是一个gaussian。
+注意：我们没有假设q(Z)是Gaussian，but rather we derived this result by variational optimization of the KL divergence over all possible distributions q(zi).</p>
+<p>用配方法，可以得到<span class="arithmatex">\(q_1^*\)</span>和<span class="arithmatex">\(q_2^*\)</span>对应的Gaussian的参数：
+<img alt="" src="../Pasted%20image%2020210502224821.png"/></p>
+<p>Note that these solutions are <strong>coupled</strong>, so that q<em>(z1) depends on expectations computed with respect to q</em>(z2) and vice versa. </p>
+<p>通常我们会循环更新这两个，直到他们收敛。
+但是在上面这个例子中，问题很简单，可以直接观察出close form solution：</p>
+<p>In particular, because <span class="arithmatex">\(E[z1]= m1\)</span> and <span class="arithmatex">\(E[z2]= m2\)</span>, we see that the two equations are satisfied if we take <span class="arithmatex">\(E[z1]= µ1\)</span> and <span class="arithmatex">\(E[z2]= µ2\)</span>, and it is easily shown that this is the only solution provided the distribution is nonsingular.</p>
+<p><img alt="" src="../Pasted%20image%2020210503112527.png"/>
+可以看到我们近似出了正确的μ，但是variance过小了。
+<strong>通常来说factorized variational approximation会给出一个过于compact的distribution</strong></p>
+<hr/>
+<p>相反，如果我们minimize <strong>reverse</strong> Kullback-Leibler divergence KL(p||q)呢？
+这种方法用于另一种近似的framework：expectation propagation</p>
+<p>此时KL散度可以写成：
+<img alt="" src="../Pasted%20image%2020210503113047.png"/>
+此时我们可以把<span class="arithmatex">\(i\neq j\)</span>的部分当作常数，然后因为有q_j积分为1，因此有约束，要用lagrange
+<img alt="" src="../Pasted%20image%2020210503113441.png"/>
+<img alt="" src="../Pasted%20image%2020210503113719.png"/></p>
+<p>我们发现，qj(Zj)的最优解只与p(Z)有关，而且是close form，不需要iteration</p>
+<p><img alt="" src="../Pasted%20image%2020210503114004.png"/>
+We see that once again the mean of the approximation is correct, but that it places significant probability mass in regions of variable space that have very low probability.</p>
+<hr/>
+<p>分析这两种方法不同的原因：</p>
+<p>对于KL(q||p)：
+here is a large positive contribution to the Kullback-Leibler divergence
+<img alt="" src="../Pasted%20image%2020210503114711.png"/>
+from regions of Z space in which p(Z) is near zero <strong>unless</strong> q(Z) is also close to zero.
+换句话说：首先注意到ln函数越靠近0，越陡。当分子p接近0，分母q不接近0时，整个ln就很小，KL散度就很大。而我们minimize KL散度，就遏制这种情况发生，也就是说：q要缩在p的内部，对应上面的图a
+对于KL(p||q)：
+就正相反，q要缩到p的内部，对应图b</p>
+<p><img alt="" src="../Pasted%20image%2020210503142122.png"/>
+对于一个multimodal的分布，我们minimize KL散度可以得到一个unimodal的近似分布，而此时选用这两种KL散度就会有不同的结果。
+与之前我们得到的结论一致，KL(p||q)会得到a，包在真实分布p的外面，KL(q||p)会得到b或c，缩在真实分布之内。
+而KL(p||q)得到的这个分布通常表现不是很好，因为because the average of two good parameter values is typically itself not a good parameter value
+不过KL(p||q)会在10.7讨论expectation propagation时发挥作用。</p>
+<hr/>
+<p><strong>alpha family</strong> of divergences</p>
+<p><img alt="" src="../Pasted%20image%2020210503232856.png"/></p>
+<p><span class="arithmatex">\(\alpha\to 1\)</span>对应KL(p||q)
+<span class="arithmatex">\(\alpha\to -1\)</span>对应KL(q||p)
+对于所有的<span class="arithmatex">\(\alpha\)</span>都有<span class="arithmatex">\(D_\alpha(p||q)&gt;0\)</span> if and only if p(x)=q(x)
+For α&lt;=−1 the divergence is <strong>zero forcing</strong>, so that any values of x for which p(x)=0 will have q(x)=0, and typically q(x) will under-estimate the support of p(x) and will tend to seek the mode with the largest mass.
+Conversely for α&gt;=1 the divergence is zero-avoiding, so that values of x for which p(x) &gt; 0 will have q(x) &gt; 0, and typically q(x) will stretch to cover all of p(x), and will over-estimate the support of p(x).
+α =0时的情况，we obtain a symmetric divergence that is linearly related to the <strong>Hellinger distance</strong> given by
+<img alt="" src="../Pasted%20image%2020210503235725.png"/></p>
+<h3 id="1013-example-the-univariate-gaussian">10.1.3 Example: The univariate Gaussian<a class="headerlink" href="#1013-example-the-univariate-gaussian" title="Permanent link">¶</a></h3>
+<h2 id="102-illustration-variational-mixture-of-gaussians">10.2. Illustration: Variational Mixture of Gaussians<a class="headerlink" href="#102-illustration-variational-mixture-of-gaussians" title="Permanent link">¶</a></h2>
+<p>首先根据上一章的讨论，我们可以得到下面这两个式子：
+（这里只不过把N个样本合到了一起）
+<img alt="" src="../Pasted%20image%2020210513092752.png"/>
+<img alt="" src="../Pasted%20image%2020210513092802.png"/>
+注意这里用precision matrices rather than covariance matrices来简化表达</p>
+<p>然后我们给<span class="arithmatex">\(\pi\)</span>设一个先验，因为Z的分布是multinomial的，因此我们用dirichlet
+<img alt="" src="../Pasted%20image%2020210513095641.png"/>
+where by symmetry we have <strong>chosen the same parameter α0 for each of the components</strong>, and C(α0) is the normalization constant for the Dirichlet distribution
+<img alt="" src="../Pasted%20image%2020210513095812.png"/>
+As we have seen, the parameter α0 can be interpreted as the effective
+prior number of observations associated with each component of the mixture. 
+If the value of α0 is small, then the posterior distribution will be influenced primarily by the data rather than by the prior.</p>
+<p>Similarly, we introduce an independent Gaussian-Wishart prior governing the mean and precision of each Gaussian component, given by
+<img alt="" src="../Pasted%20image%2020210513101652.png"/>
+because this represents the conjugate prior distribution when both the mean and precision are unknown
+<img alt="" src="../Pasted%20image%2020210513102257.png"/>
+这里我们可以看到，latent variable和parameter最大的区别就是latent variable在plate中，个数随着数据增长而增长。而在graph层面，其实与parameter没有根本上的区别。</p>
+<h3 id="1021-variational-distribution">10.2.1 Variational distribution<a class="headerlink" href="#1021-variational-distribution" title="Permanent link">¶</a></h3>
+<p>总的joint可以写作
+<img alt="" src="../Pasted%20image%2020210513103038.png"/>
+Note that only the variables X are observed.</p>
+<p>然后我们现在就来设一个可以factorize的variational distribution
+<img alt="" src="../Pasted%20image%2020210513122043.png"/>
+这里我们factorize between the latent
+variables and the parameters </p>
+<p>It is remarkable that this is the <strong>only</strong> assumption that we need to make in order to obtain a tractable practical solution to our Bayesian mixture model.
+有了这个factorize的假设，q的形式就能自动定下来</p>
+<h4 id="qz">q(Z)<a class="headerlink" href="#qz" title="Permanent link">¶</a></h4>
+<p>接下来，我们直接套用之前的最优解的结论，可以得到：
+<img alt="" src="../Pasted%20image%2020210513123337.png"/>
+然后我们只保留Z相关的部分，其他的放到const中
+<img alt="" src="../Pasted%20image%2020210513123417.png"/></p>
+<p>代入之前的两个p的定义，得到
+<img alt="" src="../Pasted%20image%2020210513123500.png"/>
+where D is the dimensionality of the data variable x.</p>
+<p>同时取对数
+<img alt="" src="../Pasted%20image%2020210513123543.png"/>
+然后再normalize一下，可以得到：
+<img alt="" src="../Pasted%20image%2020210513123613.png"/>
+<img alt="" src="../Pasted%20image%2020210513123622.png"/></p>
+<p>We see that the optimal solution for the factor q(Z) takes the same functional form as the prior p(Z|π).
+然后我们可以得到期望：（类比multinomial的期望）
+<img alt="" src="../Pasted%20image%2020210513124850.png"/>
+这个<span class="arithmatex">\(r_{nk}\)</span>其实就起着responsibility的作用</p>
+<p>观察到q*(Z)的最优解中有其他变量的期望，因此我们还是要用iterative的方法求解</p>
+<h4 id="q">q(π, µ, Λ)<a class="headerlink" href="#q" title="Permanent link">¶</a></h4>
+<p>下面定义三个statistics，用于简化表达：
+<img alt="" src="../Pasted%20image%2020210513125858.png"/>
+Note that these are analogous to quantities evaluated in the maximum likelihood EM algorithm for the Gaussian mixture model</p>
+<p>首先代入最优解：
+<img alt="" src="../Pasted%20image%2020210513131040.png"/>
+（这里观察到右边的项要么只有π，要么只有µ和Λ。体现了q(π, µ, Λ)在这里分解为q(π)q(µ, Λ)）
+而且我们观察到含有µ和Λ的项都有求和，因此我们可以把整个factorization写成：
+<img alt="" src="../Pasted%20image%2020210513131351.png"/></p>
+<p>先求关于π的：
+把与π无关的都丢到const中，可以得到
+<img alt="" src="../Pasted%20image%2020210513131718.png"/>
+Taking the exponential of both sides, we recognize q*(π) as a Dirichlet distribution
+<img alt="" src="../Pasted%20image%2020210513131821.png"/></p>
+<p>再求关于µ和Λ的：
+the variational posterior distribution <span class="arithmatex">\(q*(µk, Λk)\)</span> does not factorize into the product of the marginals, but we can always use the product rule to write it in the form <span class="arithmatex">\(q*(µk, Λk)= q*(µk|Λk)q*(Λk)\)</span> .</p>
+<p>结果也是一个Gaussian-Wishart distribution：(这里推导就跳了)
+<img alt="" src="../Pasted%20image%2020210513134027.png"/>
+These update equations are analogous to the M-step equations of the EM algorithm for the maximum likelihood solution of the mixture of Gaussians. 
+We see that the computations that <strong>must be performed in order</strong> to update the variational posterior distribution over the model parameters </p>
+<p>然而问题还没解决，
+上面的最优解中需要用到<span class="arithmatex">\(r_{nk}\)</span>, <span class="arithmatex">\(r_{nk}\)</span>是由<span class="arithmatex">\(\rho _{nk}\)</span>normalize得到的，<span class="arithmatex">\(\rho _{nk}\)</span>中又要用到<span class="arithmatex">\(E[ln\pi_k]\)</span>,<span class="arithmatex">\(E[ln\Lambda_k]\)</span>和
+<img alt="" src="../Pasted%20image%2020210513213456.png"/>
+<img alt="" src="../Pasted%20image%2020210513212719.png"/>
+We see that this expression involves expectations with respect to the variational distributions of the parameters, and these are easily evaluated to give
+<img alt="" src="../Pasted%20image%2020210513213605.png"/>
+<img alt="" src="../Pasted%20image%2020210513213809.png"/>
+<img alt="" src="../Pasted%20image%2020210513213654.png"/></p>
+<hr/>
+<p>variational EM中，
+<img alt="" src="../Pasted%20image%2020210513214006.png"/>
+MLE EM中，
+<img alt="" src="../Pasted%20image%2020210513214023.png"/>
+可以看到形式是很相近的</p>
+<hr/>
+<p>总结：
+* In the variational equivalent of the E step,
+    we use the current distributions over the model parameters to evaluate the moments in (10.64), (10.65), and (10.66) and hence evaluate E[znk]= rnk.
+* in the subsequent variational equivalent of the M step，
+    we <strong>keep these responsibilities fixed</strong> and use them to <strong>re-compute</strong> the variational distribution over the parameters using (10.57) and (10.59).</p>
+<p>同时我们可以观察到，我们求得的variational posterior q与我们的假设p的函数形式是一样的（dirichlet、Gaussian-Wishart）。This is a general result and is a consequence of the choice of conjugate distributions.</p>
+<hr/>
+<p><img alt="" src="../Pasted%20image%2020210513221703.png"/>
+<strong>Components that take essentially no responsibility for explaining the data points have rnk<span class="arithmatex">\(\to\)</span> 0 and hence Nk<span class="arithmatex">\(\to\)</span> 0. From (10.58), we see that αk<span class="arithmatex">\(\to\)</span> α0 and from (10.60)–(10.63) we see that the other parameters revert to their prior values</strong></p>
+<hr/>
+<p>In fact if we consider the limit N →∞then the Bayesian treatment converges to the maximum likelihood EM algorithm.</p>
+<p>计算量大的部分主要是the evaluation of the responsibilities, together with the evaluation and inversion of the weighted data covariance matrices，而这些在MLE EM中也都有。因此variational的方法并没有增大多少计算量。
+优点：
+* 解决了singlarity的问题，these singularities are removed if we simply introduce a prior and then use a MAP estimate instead of maximum likelihood
+* there is no over-fitting if we choose a large number K of components in the mixture
+* the variational treatment opens up the possibility of determining the optimal number of components in the mixture without resorting to techniques such as cross validation</p>
+<h3 id="1022-variational-lower-bound">10.2.2 Variational lower bound<a class="headerlink" href="#1022-variational-lower-bound" title="Permanent link">¶</a></h3>
+<p>在求解的过程中，我们可以算一下(10.3)给出的lower bound，用于验证程序是否正确或者是否收敛。
+variational GMM的lower bound：
+<img alt="" src="../Pasted%20image%2020210513233250.png"/>
+<img alt="" src="../Pasted%20image%2020210513235518.png"/>
+<img alt="" src="../Pasted%20image%2020210513235550.png"/>
+<img alt="" src="../Pasted%20image%2020210513235625.png"/>
+<img alt="" src="../Pasted%20image%2020210513235637.png"/>
+<img alt="" src="../Pasted%20image%2020210513235657.png"/>
+Note that the terms involving expectations of the logs of the q distributions simply represent the negative entropies of those distributions</p>
+<h3 id="1023-predictive-density">10.2.3 Predictive density<a class="headerlink" href="#1023-predictive-density" title="Permanent link">¶</a></h3>
+<p>在预测中，我们要利用X建模，然后为了一个新来的<span class="arithmatex">\(\hat{x}\)</span>找到它的<span class="arithmatex">\(\hat{z}\)</span>
+<img alt="" src="../Pasted%20image%2020210514204156.png"/>
+where p(π, µ, Λ|X) is the (unknown) true posterior distribution of the parameters</p>
+<p>然后对<span class="arithmatex">\(\hat{z}\)</span>进行summation：
+<img alt="" src="../Pasted%20image%2020210514205510.png"/></p>
+<p>然后接下来的积分就没法算了，然后用variational approximation q(π)q(µ, Λ)来代替p(π, µ, Λ|X)</p>
+<p><img alt="" src="../Pasted%20image%2020210514205644.png"/></p>
+<h3 id="1024-determining-the-number-of-components">10.2.4 Determining the number of components<a class="headerlink" href="#1024-determining-the-number-of-components" title="Permanent link">¶</a></h3>
+<p>还有一个需要强调的地方，
+For any given setting of the parameters in a Gaussian mixture model , there will exist other parameter settings for which the density over the observed variables will be identical.</p>
+<p>像MLE一样，最终我们会得到K!个等价的结果。
+在MLE中，没什么所谓，因为我们给参数一个初始值，然后收敛到一个解上，其他的解是没有用的。
+在variational中也是一样，if the true posterior distribution is multimodal, variational inference based on the minimization of KL(q||p) will tend to approximate the distribution in the neighbourhood of one of the modes and ignore the others.</p>
+<p>然而让我们要比较不同的K的model时，就要考虑multimodal。此时，可以<strong>add a term lnK! onto the lower bound when used for model comparison and averaging</strong></p>
+<p>MLE的likelihood的值随着K的增加单调增加，因此不能用作模型比较，而baysian可以。</p>
+<p>另外一种算合适的K的方法是，treat the mixing coefficients π as parameters and make point estimates of their values by maximizing the lower bound with respect to π instead of maintaining a probability distribution over them as in the fully Bayesian approach
+也就是增加一步：
+<img alt="" src="../Pasted%20image%2020210518075513.png"/></p>
+<h3 id="1025-induced-factorizations">10.2.5 induced factorizations<a class="headerlink" href="#1025-induced-factorizations" title="Permanent link">¶</a></h3>
+<p>除了我们预想的factorization，我们在运算过程中会自动产生一些额外的factorization。这是与graph的结构有关的。
+比如q<em>(µ, Λ)可以分解为K个component的乘积，q</em>(Z)可以分解为N个<span class="arithmatex">\(q*(Z_n)\)</span>的乘积。
+这种被额外引入的factorization称为induced factorizations。
+Such induced factorizations can easily be detected using a simple graphical test based on d-separation。
+（具体就跳了）</p>
+<h2 id="103-variational-linear-regression">10.3. Variational Linear Regression<a class="headerlink" href="#103-variational-linear-regression" title="Permanent link">¶</a></h2>
+<p>尽管baysian linear regression下的intergration是intractable的，我们仍然可以讨论一下对应的近似方法。</p>
+<p>这里我们假设precision β是已知的，并且fix到它的真实值上，用于简化计算。</p>
+<p>对于linear regression model这个例子，evidence framework和variational framework是等价的。但我们仍然可以讨论一下，为之后的variational logistic regression 作铺垫。</p>
+<p>先回忆一下之前的baysian regression，长这样：
+<img alt="" src="../Pasted%20image%2020210518221834.png"/>
+<img alt="" src="../Pasted%20image%2020210518221845.png"/></p>
+<h3 id="1031-variational-distribution">10.3.1 Variational distribution<a class="headerlink" href="#1031-variational-distribution" title="Permanent link">¶</a></h3>
+<p>我们的目标是给posterior p(w,α|t)找一个近似
+<img alt="" src="../Pasted%20image%2020210518221958.png"/></p>
+<p>直接把α代入最优解的表达式，得到：
+<img alt="" src="../Pasted%20image%2020210518222437.png"/>
+<img alt="" src="../Pasted%20image%2020210518222454.png"/>
+然后再把w代入：
+<img alt="" src="../Pasted%20image%2020210518222521.png"/>
+<img alt="" src="../Pasted%20image%2020210518222532.png"/>
+<img alt="" src="../Pasted%20image%2020210518222539.png"/>
+利用gamma和gaussian的性质，可以得到：
+<img alt="" src="../Pasted%20image%2020210518222736.png"/></p>
+<p>参数的求解方法还是给α和w一个初始值，然后循环求解</p>
+<h3 id="1032-predictive-distribution">10.3.2 Predictive distribution<a class="headerlink" href="#1032-predictive-distribution" title="Permanent link">¶</a></h3>
+<h3 id="1033-lower-bound">10.3.3 Lower bound<a class="headerlink" href="#1033-lower-bound" title="Permanent link">¶</a></h3>
+<p><img alt="" src="../Pasted%20image%2020210518223926.png"/>
+<img alt="" src="../Pasted%20image%2020210518223935.png"/></p>
+<h2 id="104-exponential-family-distributions">10.4. Exponential Family Distributions<a class="headerlink" href="#104-exponential-family-distributions" title="Permanent link">¶</a></h2>
+<p>在这一部分中，我们把latent variable进一步分为intensive <strong>latent variable</strong> Z 和 extensive <strong>parameter</strong> θ
+其中intensive表示会随着data size变化，extensive则不会。</p>
+<p>Now suppose that the joint distribution of observed and latent variables is a member of the exponential family, parameterized by natural parameters η so that
+<img alt="" src="../Pasted%20image%2020210518233311.png"/></p>
+<h2 id="105-local-variational-methods">10.5. Local Variational Methods<a class="headerlink" href="#105-local-variational-methods" title="Permanent link">¶</a></h2>
+<p>之前讲的方法可以看作是global method，it directly seeks an approximation to the <strong>full posterior distribution over all random variables</strong>
+接下来介绍一个local approach：finding bounds on functions over <strong>individual</strong> variables or <strong>groups</strong> of variables within a model
+比如，我们会找一个conditional distribution p(y|x)的bound, 然而这只是a much larger probabilistic model中的一个factor
+This local approximation can be applied to multiple variables <strong>in turn</strong> until a tractable approximation is obtained</p>
+<hr/>
+<h4 id="example-exp-x">example: exp{-x}<a class="headerlink" href="#example-exp-x" title="Permanent link">¶</a></h4>
+<p>这里用一个例子来展示local method：f(x)=exp{-x}，这个是一个convex function
+Our goal is to approximate f(x) by a simpler function, in particular a linear function of x</p>
+<p>当这个线性函数为f(x)的切线时，可以看到此时这个切线就是f(x)的一个lower bound。
+由泰勒展开可以得到f(x)在<span class="arithmatex">\(\xi\)</span> 处的切线：
+<img alt="" src="../Pasted%20image%2020210519101925.png"/></p>
+<p><span class="arithmatex">\(y(x)\le f(x)\)</span> with equality when x = <span class="arithmatex">\(\xi\)</span></p>
+<p>然后我们把f(x)换成exp(-x)，然后令<span class="arithmatex">\(\lambda =-exp\{-\xi\}\)</span>，可以得到：
+<img alt="" src="../Pasted%20image%2020210519102518.png"/>
+<img alt="" src="../Pasted%20image%2020210519102530.png"/></p>
+<p>不同的λ对应不同的切线，每一条切线都是f(x)的lower bound，同时λ也是这一条切线的斜率。切线parameterized by λ。
+因为<span class="arithmatex">\(f(x)\ge y(x, \lambda)\)</span>，就可以得到
+<img alt="" src="../Pasted%20image%2020210519103153.png"/></p>
+<p>然后我们就用一个更简单的<span class="arithmatex">\(y(x, \lambda)\)</span>近似了f(x)，但同时我们引入了一个新的参数λ</p>
+<hr/>
+<h4 id="generalize">generalize<a class="headerlink" href="#generalize" title="Permanent link">¶</a></h4>
+<p>下面用<strong>convex duality</strong>对上面的这种方法进行推广：</p>
+<p><img alt="" src="../Pasted%20image%2020210519105559.png"/>
+在左图中，<span class="arithmatex">\(\lambda x\)</span>是convex funxtion f(x)的一个lower bound，但是并不是最tight的，因此要把直线平移到与f(x)相切的位置。而需要平移的距离可以由<span class="arithmatex">\(min\{f(x)-\lambda x\}\)</span>得到，因此我们定义一个<span class="arithmatex">\(g(\lambda)\)</span>:
+<img alt="" src="../Pasted%20image%2020210519105545.png"/>
+刚才我们是fixing λ and varying x，现在consider a particular x and then adjust λ until the tangent plane is tangent at that particular x
+现在有了<span class="arithmatex">\(g(\lambda)\)</span>，我们已经能保证直线与f(x)相切了。现在我们想要给定某一个x，调整λ，使得直线与f(x)<strong>在x处相切</strong>。
+consider一个<span class="arithmatex">\(max_{\lambda}(\lambda x-g(\lambda))\)</span>，尝试所有的λ，我们会得到一系列的“切线在x处的y坐标”。而这其中最大的，就是切线与f(x)在x处相切的情况，此时max得到的这个值，恰好等于f(x)在x处的函数值，
+<img alt="" src="../Pasted%20image%2020210519171928.png"/>
+因此我们可以把这个“巧合”表示为：
+<img alt="" src="../Pasted%20image%2020210519111533.png"/></p>
+<p>观察这两个式子的形式，我们可以看到这两个式子play a dual role
+<span class="arithmatex">\(g(\lambda)=max_{x}(\lambda x-f(x))\)</span>
+<span class="arithmatex">\(f(x)=max_{\lambda}(\lambda x-g(\lambda))\)</span></p>
+<hr/>
+<p>类比，对于concave function，我们可以找upper bound，此时要把上边式子中的max都换成min：
+<img alt="" src="../Pasted%20image%2020210519173256.png"/></p>
+<hr/>
+<p>如果function既不是convex也不是concave，we can first seek invertible transformations either of the function or of its argument which change it into a convex form. We then calculate the conjugate function and then transform back to the original variables.</p>
+<p>例子：logistic sigmoid function：
+<img alt="" src="../Pasted%20image%2020210519173521.png"/>
+upper bound：
+sigmoid既不是convex也不是concave，但是由二阶导数可知，sigmoid的logarithm是concave的。因此我们令f(x)=sigmoid的导数。令<span class="arithmatex">\(f'(x)=\lambda\)</span>,求出<span class="arithmatex">\(\xi\)</span>，再代入g(λ)，可以得到：
+<img alt="" src="../Pasted%20image%2020210519190745.png"/>
+我们发现这就是binary entropy，for a variable whose probability of having the value 1 is λ</p>
+<p>然后我们代入到f(x)的表达式，就可以得到sigmoid的upperbound：
+<img alt="" src="../Pasted%20image%2020210519191005.png"/>
+<img alt="" src="../Pasted%20image%2020210519192344.png"/></p>
+<p>lower bound：
+We can also obtain a lower bound on the sigmoid having the functional form of a Gaussian
+<img alt="" src="../Pasted%20image%2020210519194328.png"/>
+<img alt="" src="Pasted%20image%2020210519194435.png"/>
+<span class="arithmatex">\(f(x)=-ln(e^{x/2}+e^{-x/2})\)</span> is a convex function of the variable <span class="arithmatex">\(x^2\)</span>
+因此我们可以得出一个关于<span class="arithmatex">\(x^2\)</span>的linear function作为lower bound
+<img alt="" src="../Pasted%20image%2020210519194642.png"/>
+求解时，令λ等于斜率：
+<img alt="" src="../Pasted%20image%2020210519194658.png"/>
+可以得到这个式子，再利用tanh和sigmoid的关系，可以做一下转换：
+<img alt="" src="../Pasted%20image%2020210519195639.png"/></p>
+<p>下面要进行一个比较微妙的改动，（因为PRML就这么改的），我们把之前讨论中的所有<span class="arithmatex">\(\lambda\)</span>改为<span class="arithmatex">\(\eta\)</span>，然后定义<span class="arithmatex">\(\lambda=-\eta\)</span>
+此时上面的(10.141)就变成了
+<img alt="" src="../Pasted%20image%2020210519200248.png"/>
+而本质上其实什么都没有改，只是换了一下notation</p>
+<p>Instead of thinking of λ as the variational parameter, we can let ξ play this role as this leads to simpler expressions for the conjugate function, which is then given by
+<img alt="" src="../Pasted%20image%2020210519200637.png"/>
+然后我们就得到了f(x)的bound：
+<img alt="" src="../Pasted%20image%2020210519200727.png"/>
+<img alt="" src="../Pasted%20image%2020210519200912.png"/>
+where λ(ξ) is defined by (10.141).</p>
+<hr/>
+<p>使用这些bound的例子：</p>
+<p><img alt="" src="../Pasted%20image%2020210519201642.png"/>
+where σ(a) is the logistic sigmoid, and p(a) is a Gaussian probability density
+在Bayesian models的predictive distribution中，我们会遇到上面的这个积分，其中p(a)是一个posterior parameter distribution
+这个积分没法算，因此我们利用(10.144)这个近似，这里我们记作<span class="arithmatex">\(\sigma(a)\ge f(a,\xi)\)</span> where ξ is a variational parameter</p>
+<p>The integral now <strong>becomes the product of two exponential-quadratic functions</strong> and so can be integrated analytically to give a bound on I
+<img alt="" src="../Pasted%20image%2020210519202152.png"/></p>
+<p>此时我们将其转化为了一个关于<span class="arithmatex">\(\xi\)</span>的优化问题，which we do by finding the value ξ that maximizes the function F(ξ)
+The resulting value F(ξ) represents the tightest bound <strong>within this family of bounds</strong> and can be used as an approximation to I.</p>
+<h2 id="106-variational-logistic-regression">10.6. Variational Logistic Regression<a class="headerlink" href="#106-variational-logistic-regression" title="Permanent link">¶</a></h2>
+<h3 id="1061-variational-posterior-distribution">10.6.1 Variational posterior distribution<a class="headerlink" href="#1061-variational-posterior-distribution" title="Permanent link">¶</a></h3>
+<p>下面我们使用variational approximation based on the local bounds。
+<strong>This allows the likelihood function for logistic regression, which is governed by the logistic sigmoid, to be approximated by the exponential of a quadratic form.</strong>
+和第4章一样，我们还是先给w设一个gaussian的prior
+<img alt="" src="../Pasted%20image%2020210519211541.png"/>
+这里我们先假定<span class="arithmatex">\(m_0\)</span>和<span class="arithmatex">\(S_0\)</span>这两个hyperparameter都是fixed constants。在10.6.3中再拓展到unknown的情况。</p>
+<hr/>
+<p>我们先写出baysian logistic regression的marginal，然后利用variational的方法，求出lower bound从而对其进行近似。</p>
+<p>baysian LR中，marginal likelihood是这样的：
+<img alt="" src="../Pasted%20image%2020210519221814.png"/></p>
+<p>对于每一个t，都有：
+<img alt="" src="../Pasted%20image%2020210519221936.png"/>
+where a = <span class="arithmatex">\(w^T\phi\)</span></p>
+<p>回忆我们之前求的sigmoid的lower bound：
+<img alt="" src="../Pasted%20image%2020210519231334.png"/>
+代入得到：
+<img alt="" src="../Pasted%20image%2020210519231455.png"/></p>
+<p>我们可以看到每笔data都对应一个<span class="arithmatex">\(\xi\)</span>。
+然后我们把a = <span class="arithmatex">\(w^T\phi\)</span>和lower bound代入joint，可以看到我们可以用<span class="arithmatex">\(h(w,\xi)\)</span>近似conditional likelihood
+<img alt="" src="../Pasted%20image%2020210519234207.png"/></p>
+<p>Note that the function on the right-hand side cannot be interpreted as a probability density <strong>because it is not normalized</strong>.</p>
+<p>因为ln函数单调递增，所以上面的不等式，两边同时取ln，不等式方向不变：
+<img alt="" src="../Pasted%20image%2020210519235638.png"/></p>
+<p>最后代入prior p(w)，不等式右边看作是w的function：
+<img alt="" src="../Pasted%20image%2020210520224703.png"/>
+然后我们发现ln posterior是一个关于w的quadratic，因此可以把w的分布写成一个gaussian q(w)，用这个q(w)来近似p(t|w)p(w)
+由此我们得到variational gaussian posterior:
+<img alt="" src="../Pasted%20image%2020210521090038.png"/></p>
+<h3 id="1062-optimizing-the-variational-parameters">10.6.2 Optimizing the variational parameters<a class="headerlink" href="#1062-optimizing-the-variational-parameters" title="Permanent link">¶</a></h3>
+<p>在做预测之前，我们需要求解variational parameters {ξn} by maximizing the lower bound on the marginal likelihood.</p>
+<p>我们把之前的得到的不等式代入marginal p(t)的表达式：
+<img alt="" src="../Pasted%20image%2020210521091207.png"/></p>
+<p>因此我们要利用上面这个式子maximize over ξ，这是就可以选两种方法：
+* we recognize that the function L(ξ) is defined by an integration over w and so we can view w as a latent variable and <strong>invoke the EM algorithm</strong>
+* we <strong>integrate over w analytically</strong> and then perform a direct maximization over ξ. Let us begin by considering the EM approach</p>
+<hr/>
+<p>EM algorithm:</p>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../../assets/javascripts/bundle.51198bba.min.js"></script>
+<script src="../../../javascripts/mathjax.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</body>
+</html>

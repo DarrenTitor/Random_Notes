@@ -1,0 +1,860 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../../chap8/chap8/" rel="prev"/>
+<link href="../../../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.4.2, mkdocs-material-9.1.7" name="generator"/>
+<title>9. Mixture Models and EM - Some random ML notes</title>
+<link href="../../../assets/stylesheets/main.ded33207.min.css" rel="stylesheet"/>
+<link href="../../../assets/stylesheets/palette.a0c5b2b5.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="cyan" data-md-color-primary="white" data-md-color-scheme="default" dir="ltr">
+<script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#9-mixture-models-and-em">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Some random ML notes" class="md-header__button md-logo" data-md-component="logo" href="../../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Some random ML notes
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              9. Mixture Models and EM
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="white" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="light-blue" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="deep-purple" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+</form>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Some random ML notes" class="md-nav__button md-logo" data-md-component="logo" href="../../.." title="Some random ML notes">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"></path></svg>
+</a>
+    Some random ML notes
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../..">
+        Nothing special here
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          MML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+          MML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap1/">
+        chap 1: Introduction and Motivation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap2/">
+        chap2: Linear Algebra
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap3/">
+        chap3 Analytic Geometry
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap4/">
+        chap 4 - Matrix Decompositions
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap5/">
+        chap5 - Vector Calculus
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../MML/chap6%20-%20Probability%20and%20Distributions/">
+        Probability and Distributions
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          NLP
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+          NLP
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+          Lecture
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+          Lecture
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_1_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1_1" id="__nav_3_1_1_label" tabindex="0">
+          HMM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_1_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_3_1_1">
+<span class="md-nav__icon md-icon"></span>
+          HMM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../NLP/Lecture/HMM/HMM/">
+        HMM
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+          Speech Synthesis
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_2">
+<span class="md-nav__icon md-icon"></span>
+          Speech Synthesis
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../NLP/Speech%20Synthesis/Speech%20Papers/">
+        Speech Papers
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          PGM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+          PGM
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          Course
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_1">
+<span class="md-nav__icon md-icon"></span>
+          Course
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture01-Introduction/">
+        lecture01-Introduction
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture02-MRFrepresentation/">
+        lecture02-MRFrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture03-BNrepresentation/">
+        lecture03-BNrepresentation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture04-ExactInference/">
+        lecture04-ExactInference
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture05-ParameterEst/">
+        lecture05 ParameterEst
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture06-HMMCRF/">
+        lecture06 HMMCRF
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture07-VI1/">
+        lecture07-VI1
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture08-VI2/">
+        lecture08 VI2
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture09-MC/">
+        lecture09-MC
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture10-MCMC-opt/">
+        lecture10-MCMC-opt
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture11-NN/">
+        lecture11-NN
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/course/lecture12-DGM1/">
+        lecture12-DGM1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          Pyro
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_2">
+<span class="md-nav__icon md-icon"></span>
+          Pyro
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../PGM/pyro/Untitled/">
+        An Introduction to Models in Pyro
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          PRML
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+          PRML
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          Chap1
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+          Chap1
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap1/chap1/">
+        Chap1
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+          Chap10
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+          Chap10
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap10/Pasted%20image%2020210519194435.png/">
+        Pasted image 20210519194435.png
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap10/chap10/">
+        10. Approximate Inference
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+          Chap2
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_3">
+<span class="md-nav__icon md-icon"></span>
+          Chap2
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap2/chap2/">
+        Chap2
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+          Chap3
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_4">
+<span class="md-nav__icon md-icon"></span>
+          Chap3
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap3/chap3/">
+        Chap3
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+          Chap8
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_5">
+<span class="md-nav__icon md-icon"></span>
+          Chap8
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../chap8/chap8/">
+        8. GRAPHICAL MODELS
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+          Chap9
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_6_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_6">
+<span class="md-nav__icon md-icon"></span>
+          Chap9
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          9. Mixture Models and EM
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+        9. Mixture Models and EM
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#91-k-means-clustering">
+    9.1. K-means Clustering
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#92-mixtures-of-gaussians">
+    9.2. Mixtures of Gaussians
+  </a>
+<nav aria-label="9.2. Mixtures of Gaussians" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#921-maximum-likelihood">
+    9.2.1 Maximum likelihood
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#922-em-for-gaussian-mixtures">
+    9.2.2 EM for Gaussian mixtures
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#93-an-alternative-view-of-em">
+    9.3. An Alternative View of EM
+  </a>
+<nav aria-label="9.3. An Alternative View of EM" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#931-gaussian-mixtures-revisited">
+    9.3.1 Gaussian mixtures revisited
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#932-relation-to-k-means">
+    9.3.2 Relation to K-means
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#94-the-em-algorithm-in-general">
+    9.4. The EM Algorithm in General
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#91-k-means-clustering">
+    9.1. K-means Clustering
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#92-mixtures-of-gaussians">
+    9.2. Mixtures of Gaussians
+  </a>
+<nav aria-label="9.2. Mixtures of Gaussians" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#921-maximum-likelihood">
+    9.2.1 Maximum likelihood
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#922-em-for-gaussian-mixtures">
+    9.2.2 EM for Gaussian mixtures
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#93-an-alternative-view-of-em">
+    9.3. An Alternative View of EM
+  </a>
+<nav aria-label="9.3. An Alternative View of EM" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#931-gaussian-mixtures-revisited">
+    9.3.1 Gaussian mixtures revisited
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#932-relation-to-k-means">
+    9.3.2 Relation to K-means
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#94-the-em-algorithm-in-general">
+    9.4. The EM Algorithm in General
+  </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="9-mixture-models-and-em">9. Mixture Models and EM<a class="headerlink" href="#9-mixture-models-and-em" title="Permanent link">¶</a></h1>
+<ul>
+<li>As well as providing a framework for building more complex probability distributions, mixture models can also be used to cluster data</li>
+<li>A general technique for finding maximum likelihood estimators in latent variable models is the expectation-maximization (EM) algorithm. </li>
+<li>在很多应用中，Gaussian mixture models的参数都是用EM得到的，然而MLE是有缺陷的。chapter10会介绍Variational inference. Variational inference的计算量不会比EM多很多，解决了MLE的问题，而且allowing the number of components in the mixture to be inferred automatically from the data</li>
+</ul>
+<h2 id="91-k-means-clustering">9.1. K-means Clustering<a class="headerlink" href="#91-k-means-clustering" title="Permanent link">¶</a></h2>
+<p>目标是把N个D维的observed data x分为K个cluster，这里假定K已知。</p>
+<p>我们引入K个D维向量<span class="arithmatex">\(\mu_k\)</span>用于描述每个cluster的中心
+我们想要找到一种对data的分配，使得the sum of the squares of the distances of each data point to its closest vector <span class="arithmatex">\(\mu_k\)</span>,is a minimum</p>
+<p>对每一个x，都用一个K维onehot表示这个data所属的cluster
+<img alt="" src="../Pasted%20image%2020210428160037.png"/></p>
+<p>然后就可以定义一个objective function，或者叫distortion measure：
+<img alt="" src="../Pasted%20image%2020210428160158.png"/>
+Our goal is to find values for the <span class="arithmatex">\(\{r_{nk}\}\)</span> and the <span class="arithmatex">\(\{\mu_{k}\}\)</span> so as to minimize J.</p>
+<p>我们可以用一个iterative procedure，每个iteration分为两步，分别对<span class="arithmatex">\(r_{nk}\)</span> 和 <span class="arithmatex">\(\mu_{k}\)</span>优化</p>
+<p>First we choose some initial values for the <span class="arithmatex">\(\mu_{k}\)</span>. 
+Then in the first phase we minimize J with respect to the <span class="arithmatex">\(r_{nk}\)</span>, keeping the <span class="arithmatex">\(\mu_{k}\)</span> fixed. 
+In the second phase we minimize J with respect to the <span class="arithmatex">\(\mu_{k}\)</span>, keeping <span class="arithmatex">\(r_{nk}\)</span> fixed. 
+This two-stage optimization is then repeated until convergence. </p>
+<p>之后我们会看到对<span class="arithmatex">\(r_{nk}\)</span>和<span class="arithmatex">\(\mu_{k}\)</span>分别对应E step和M step</p>
+<p>Consider first the determination of the <span class="arithmatex">\(r_{nk}\)</span>
+we simply assign the <span class="arithmatex">\(n^{th}\)</span> data point to the closest cluster centre. More formally, this can be expressed as
+<img alt="" src="../Pasted%20image%2020210428161251.png"/></p>
+<p>Now consider the optimization of the <span class="arithmatex">\(\mu_{k}\)</span> with the <span class="arithmatex">\(r_{nk}\)</span> held fixed.
+直接对μ求导可得
+<img alt="" src="../Pasted%20image%2020210428161415.png"/>
+<img alt="" src="../Pasted%20image%2020210428161427.png"/>
+<span class="arithmatex">\(\mu_{k}\)</span> equal to the mean of all of the data points xn assigned to cluster k</p>
+<p>Because each phase reduces the value of the objective function J, convergence of the algorithm is assured. However, it may converge to a local rather than global minimum of J.</p>
+<p>把squared Euclidean distance推广到general dissimilarity，就得到了K-medoids algorithm
+<img alt="" src="../Pasted%20image%2020210428162647.png"/>
+为了简化模型，会把<span class="arithmatex">\(\mu\)</span>设为每个cluster中的某个data</p>
+<p>注意在K-Means中是硬分类，每笔data只能分配给唯一的一个cluster</p>
+<h2 id="92-mixtures-of-gaussians">9.2. Mixtures of Gaussians<a class="headerlink" href="#92-mixtures-of-gaussians" title="Permanent link">¶</a></h2>
+<p>We now turn to a formulation of Gaussian mixtures in terms of discrete <strong>latent</strong> variables.</p>
+<p>Gaussian mixture distribution可以写成linear superposition of Gaussians
+<img alt="" src="../Pasted%20image%2020210428170711.png"/></p>
+<hr/>
+<p>下面我们从latent variable的角度引出上面这个式子：
+引入一个1-of-K的变量<span class="arithmatex">\(\mathrm{z}\)</span>, in which a particular element zk is equal to 1 and all other elements are equal to 0</p>
+<p>定义一个x与z的joint，in terms of a marginal distribution p(z) and a conditional distribution p(x|z)
+这样就可以得到graph：
+<img alt="" src="../Pasted%20image%2020210428220840.png"/></p>
+<p>然后我们把z的marginal用一组系数<span class="arithmatex">\(\pi_k\)</span>表示
+<img alt="" src="../Pasted%20image%2020210428221026.png"/>
+<img alt="" src="../Pasted%20image%2020210428221040.png"/>
+注意这里<span class="arithmatex">\(\pi_k\)</span>要满足概率的性质（非负，和为一）</p>
+<p>同时，我们把x在z=1的conditional设为gaussian：
+<img alt="" src="../Pasted%20image%2020210428221635.png"/>
+合起来可以写成
+<img alt="" src="../Pasted%20image%2020210428221711.png"/></p>
+<p>The joint distribution is given by p(z)p(x|z), 
+在joint上对z进行summation可以得到marginal p(x):
+<img alt="" src="../Pasted%20image%2020210428221858.png"/></p>
+<p>乍一看引入z好像没什么意义，However, we are now able to work with the <strong>joint distribution p(x, z) instead of the marginal distribution p(x)</strong>, and this will lead to significant <strong>simplifications</strong>, most notably through the introduction of the expectation-maximization (EM) algorithm</p>
+<hr/>
+<p>现在再定义一个比较重要的量：
+the conditional probability of z given x, <span class="arithmatex">\(\gamma(z_k)\)</span>
+<span class="arithmatex">\(\gamma(z_k)\)</span>可以直接用bayes theorem求
+<img alt="" src="../Pasted%20image%2020210428222852.png"/>
+We shall view πk as the prior probability of zk =1, and the quantity γ(zk) as the corresponding posterior probability once we have observed x
+As we shall see later, γ(zk) can also be viewed as the <strong>responsibility</strong> that component k takes for ‘explaining’ the observation x.</p>
+<hr/>
+<p>在mixture gaussian上generate random samples的方法：
+之前提到的ancestral sampling：
+先在marginal p(z)上生成一个value of z，记作<span class="arithmatex">\(\hat{z}\)</span>，
+然后用这个<span class="arithmatex">\(\hat{z}\)</span>，在conditional<span class="arithmatex">\(p(x|\hat{z})\)</span>上generate一个x</p>
+<p><img alt="" src="../Pasted%20image%2020210428225623.png"/>
+根据prior <span class="arithmatex">\(\pi_k\)</span>可以得到图a，根据posterior <span class="arithmatex">\(\gamma(z_k)\)</span>可以得到图c</p>
+<h3 id="921-maximum-likelihood">9.2.1 Maximum likelihood<a class="headerlink" href="#921-maximum-likelihood" title="Permanent link">¶</a></h3>
+<p>Suppose we have a data set of observations {x1,..., xN}, and we wish to model this data using a mixture of Gaussians
+对应的latent variable可以写成一个NxK的矩阵Z
+<img alt="" src="../Pasted%20image%2020210429103842.png"/>
+假设i.i.d，则可以写出log likelihood：
+<img alt="" src="../Pasted%20image%2020210429103717.png"/></p>
+<hr/>
+<p>下面来探讨对mixture gaussian进行MLE所存在的问题：
+For simplicity, consider a Gaussian mixture whose components have covariance matrices given by <span class="arithmatex">\(\Sigma_k = \sigma^2_k\textbf{I}\)</span></p>
+<p>Suppose that one of the components of the mixture model, let us say the jth component, has its mean µj exactly equal to one of the data points so that µj = xn for some value of n. This data point will then contribute a term in the likelihood function of the form</p>
+<p><img alt="" src="../Pasted%20image%2020210429104756.png"/>
+<span class="arithmatex">\(\sigma_j\to0\)</span>时，这一点对likelihood的贡献趋于无穷，likelihood趋于无穷</p>
+<p>因此MLE不适用于Mixture Gaussian，因为such singularities will always be present and will occur whenever one of the Gaussian components ‘collapses’ onto a specific data point.</p>
+<p>Recall that this problem did not arise in the case of a single Gaussian distribution. To understand the difference, note that if a single Gaussian collapses onto a data point it will contribute multiplicative factors to the likelihood function arising from the other data points and these factors will go to zero exponentially fast, giving an overall likelihood that goes to zero rather than infinity. 
+However, once we have (at least) two components in the mixture, one of the components can have a finite variance and therefore assign finite probability to all of the data points while the other component can shrink onto one specific data point and thereby contribute an ever increasing additive value to the log likelihood</p>
+<p>还有一个问题就是<strong>identifiability</strong>。for any given (nondegenerate) point in the space of parameter values there will be a further K!−1 additional points all of which give rise to exactly the same distribution.
+简单来说，就是K组参数和K个component，K个萝卜K个坑，顺序无所谓结果，但是却对应着K！个solution</p>
+<p>Mixture gaussian比单个gaussian更难计算的原因，其实就是(9.14)的log likelihood中，ln内有求和，这个是不能做简化的。因此求导之后不能直接得到解</p>
+<h3 id="922-em-for-gaussian-mixtures">9.2.2 EM for Gaussian mixtures<a class="headerlink" href="#922-em-for-gaussian-mixtures" title="Permanent link">¶</a></h3>
+<p>An elegant and powerful method for finding maximum likelihood solutions for models with latent variables is called the <strong>expectation-maximization algorithm</strong>, or EM algorithm </p>
+<p>将log likelihood对<span class="arithmatex">\(\mu_k\)</span>求导
+<img alt="" src="../Pasted%20image%2020210430111653.png"/>
+<img alt="" src="../Pasted%20image%2020210430111833.png"/>
+<img alt="" src="../Pasted%20image%2020210430114303.png"/>
+可以看到右边的其中一项就是<span class="arithmatex">\(\gamma(z_{nk})\)</span>，也就是<span class="arithmatex">\(p(z_k=1|x)\)</span>这个后验</p>
+<p>multiplying by <span class="arithmatex">\(\Sigma_k\)</span>(which we assume to be nonsingular)可以得到
+<img alt="" src="../Pasted%20image%2020210430112329.png"/>
+We can interpret <span class="arithmatex">\(N_k\)</span> as the effective number of points assigned to cluster k.</p>
+<p>可以看到，<span class="arithmatex">\(\mu_k\)</span>是第k个gaussian的data的weighted sum，weight则是posterior probability γ(znk) that component k was responsible for generating xn</p>
+<p>接下来用相同的思路对<span class="arithmatex">\(Sigma_k\)</span>求导，making use of the result for the maximum likelihood solution for the covariance matrix of a single Gaussian, we obtain
+<img alt="" src="../Pasted%20image%2020210430115412.png"/>
+<img alt="" src="../Pasted%20image%2020210430115112.png"/>
+again with each data point weighted by the corresponding posterior probability and with the denominator given by the effective number of points associated with the corresponding component.</p>
+<p>最后我们要对<span class="arithmatex">\(\pi_k\)</span>做MLE，要用到Lagrange，因为对于<span class="arithmatex">\(\pi_k\)</span>是有约束的：
+<img alt="" src="../Pasted%20image%2020210430115707.png"/></p>
+<p><img alt="" src="../Pasted%20image%2020210430115757.png"/></p>
+<p>因此第k个gaussian的系数就是the average responsibility which that component takes for explaining the data points</p>
+<p>需要强调的是，上面的三个式子并不是model的一个closed-form solution，
+但是我们可以用iterative scheme来求解，
+1. 首先选定means, covariances, and mixing coefficients的初始值
+2. alternate between the following two updates that we shall call the E step and the M step
+    1. In the expectation step, or E step, we use the current values for the parameters to evaluate the <strong>posterior probabilities, or responsibilities</strong>, given by (9.13)
+    <img alt="" src="Pasted%20image%2020210501095057.png"/>
+    2. We then use these probabilities in the maximization step, or M step, to re-estimate the <strong>means, covariances, and mixing coefficients</strong> using the results (9.17), (9.19), and (9.22)</p>
+<p>注意在M step中我们先求<span class="arithmatex">\(\mu\)</span>，再用这个<span class="arithmatex">\(\mu\)</span>求<span class="arithmatex">\(\Sigma\)</span></p>
+<p>EM的iteration数与每个循环中的计算量都远大于KMeans，因此常常先用Kmeans找初始值，再用gaussian mixture进一步求：The covariance matrices can conveniently be initialized to the sample covariances of the clusters found by the K-means algorithm, and the mixing coefficients can be set to the fractions of data points assigned to the respective clusters. 
+强调：log likelihood function有多个local maxima, EM并不保证找到global maxima</p>
+<h2 id="93-an-alternative-view-of-em">9.3. An Alternative View of EM<a class="headerlink" href="#93-an-alternative-view-of-em" title="Permanent link">¶</a></h2>
+<p><strong>The goal of the EM algorithm is to find maximum likelihood solutions for models having latent variables</strong></p>
+<p>We denote the set of all observed data by <span class="arithmatex">\(\textbf{X}\)</span>, in which the <span class="arithmatex">\(n^{th}\)</span> row represents <span class="arithmatex">\(\textbf{x}^T_n\)</span>, and similarly we denote the set of all latent variables by <span class="arithmatex">\(\textbf{Z}\)</span>, with a corresponding row <span class="arithmatex">\(\textbf{z}^T_n\)</span>. The set of all model parameters is denoted by <span class="arithmatex">\(\theta\)</span>, and
+so the log likelihood function is given by
+<img alt="" src="Pasted%20image%2020210501103630.png"/>
+对于continuous latent variables，只需要把求和换成积分</p>
+<p>注意到summation出现在ln内，Even if the joint distribution p(X, Z|θ) belongs to the exponential family, the marginal distribution p(X|θ) typically does not as a result of this summation. 求和使得ln不能直接作用于joint，导致MLE的解很复杂</p>
+<p>假设对于每个observation in X，我们都知道对应的Z，We shall call {X, Z} the <strong>complete</strong> data set, and we shall refer to the actual observed data X as <strong>incomplete</strong>。
+<img alt="" src="Pasted%20image%2020210501104541.png"/>
+（a是complete的，b是incomplete的）
+我们可知，对于complete data set的log likelihood就是简单的ln p(X,Z|θ), <strong>我们假设这个log likelihood的maximization是好求的</strong>。</p>
+<p>然而在实践中，我们没有complete data set，只有incomplete data set X
+Our state of knowledge of the values of the latent variables in Z is given only by the posterior distribution p(Z|X, θ)</p>
+<p><strong>Because we cannot use the complete-data log likelihood, we consider instead its expected value under the posterior distribution of the latent variable, which corresponds (as we shall see) to the E step of the EM algorithm.</strong> 
+上面这句很关键，我们是在表示complete-data log likelihood的期望，其中概率是posterior p(Z|X, θ)，value是 ln p(X, Z|θ)。也就是用incomplete的X的log likelihood在p(Z|X, θ)上的概率求期望。这个期望不是X的期望，而是人为定义的一个值，是对complete-data log likelihood的近似。而这计算这个期望的步骤对应E-step，而求出使这个期望最大的参数的过程对应M-step。
+如果当前参数对应<span class="arithmatex">\(\theta^{old}\)</span>，那么先后经历了一个Estep和Mstep之后，我们就得到了一个新的<span class="arithmatex">\(\theta^{new}\)</span></p>
+<p>The use of the expectation may seem somewhat arbitrary. However, we shall see the motivation for this choice when we give a deeper treatment of EM in Section 9.4.</p>
+<p>总结：
+* In the E step, we use the current parameter values <span class="arithmatex">\(\theta^{old}\)</span> to find the posterior distribution of the latent variables given by <span class="arithmatex">\(p(Z|X, \theta^{old})\)</span>.
+    We then use this posterior distribution to find the expectation of the complete-data log likelihood evaluated for some general parameter value <span class="arithmatex">\(\theta\)</span>. This expectation, denoted <span class="arithmatex">\(\mathcal{Q} (\theta,\theta^{old})\)</span>, isgiven by
+    <img alt="" src="Pasted%20image%2020210501122529.png"/>
+* In the M step, we determine the revised parameter estimate <span class="arithmatex">\(\theta^{new}\)</span> by maximizing this function
+    <img alt="" src="Pasted%20image%2020210501122813.png"/></p>
+<p>Note:
+注意现在在<span class="arithmatex">\(\mathcal{Q} (\theta,\theta^{old})\)</span> 中，ln直接作用在joint上，ln中没有summation了，因此可以计算了</p>
+<p><img alt="" src="Pasted%20image%2020210501123432.png"/>
+<img alt="" src="Pasted%20image%2020210501123447.png"/></p>
+<p>The EM algorithm can also be used to find MAP (maximum posterior) solutions for models in which a prior p(θ) is defined over the parameters. 
+In this case the E step remains the same as in the maximum likelihood case, whereas in the M step the quantity to be maximized is given by <span class="arithmatex">\(\mathcal{Q} (\theta,\theta^{old}) + ln p(\theta)\)</span>.</p>
+<h3 id="931-gaussian-mixtures-revisited">9.3.1 Gaussian mixtures revisited<a class="headerlink" href="#931-gaussian-mixtures-revisited" title="Permanent link">¶</a></h3>
+<p>EM的motivation：(incomplete不知道Z导致了ln(summation), 没法算. 而下面来展示如果是complete的话，就很好算)
+现在假设我们不光知道X，还知道Z，也就是知道是哪个component产生了X。（注意这个Z是hard的onehot，与posterior的<span class="arithmatex">\(\gamma(z_{nk})\)</span>区分开）
+<img alt="" src="../Pasted%20image%2020210501222803.png"/>
+此时likelihood为：
+<img alt="" src="../Pasted%20image%2020210501222912.png"/>
+此时可以看到，ln内部没有summation，而ln里的gaussian本身就是exponential family中的，因此很好算</p>
+<p>（下面从隐变量的角度把GMM再推一下）
+然而实际中并没有隐变量的值，因此我们把数据X在Z的后验上的期望看作是complete-data log likelihood</p>
+<p><img alt="" src="../Pasted%20image%2020210501224610.png"/>
+<img alt="" src="../Pasted%20image%2020210501224619.png"/>
+再加上bayes定理可以得到
+<img alt="" src="../Pasted%20image%2020210501224659.png"/>
+<img alt="" src="../Pasted%20image%2020210501224726.png"/></p>
+<p>与之前的硬算p(X)
+<img alt="" src="../Pasted%20image%2020210501224830.png"/>
+相比，可以看到ln与求和交换了位置，因此好算</p>
+<ul>
+<li>the maximization with respect to the means and covariances:
+    因为<span class="arithmatex">\(z_{nk}\)</span>是onehot，因此(9.36)只是K个independent的gaussian相加，因此结果就是K个gaussian各自算各自的参数</li>
+<li>the maximization with respect to the mixing coefficients：
+    因为有sum为1的约束，因此还是要用lagrange，得到
+    <img alt="" src="../Pasted%20image%2020210501231105.png"/>
+    因此mixing coefficients are equal to the fractions of data points assigned to the corresponding components</li>
+</ul>
+<p>那么问题来了，<span class="arithmatex">\(z_{nk}\)</span>我们不知道，因此和前面一样，我们用bayes：（其实式子也和前面(9.35)是一个道理，因为posterior正比于joint）
+<img alt="" src="../Pasted%20image%2020210501232121.png"/>
+观察这个式子我们可以发现。N个<span class="arithmatex">\(z_n\)</span>是independent的，因此我们可以
+<img alt="" src="../Pasted%20image%2020210501233712.png"/>
+<img alt="" src="../Pasted%20image%2020210501233725.png"/>
+(Mark，上面这个求期望没咋看懂)
+The expected value of the complete-data log likelihood function is therefore given by
+<img alt="" src="../Pasted%20image%2020210501234157.png"/></p>
+<h3 id="932-relation-to-k-means">9.3.2 Relation to K-means<a class="headerlink" href="#932-relation-to-k-means" title="Permanent link">¶</a></h3>
+<p>Kmeans是hard的，GMM是soft的，我们可以把kmeans看作是GMM的一个limit</p>
+<p>假设GMM的每个component的gaussian，covariance  matrix都是<span class="arithmatex">\(\epsilon I\)</span>, where <span class="arithmatex">\(\epsilon\)</span> is a variance parameter that is shared by all of the components
+<img alt="" src="../Pasted%20image%2020210501235619.png"/>
+我们假设，<span class="arithmatex">\(\epsilon\)</span>不需要在EM中求解，然后我们代入EM-GMM的结论：
+可以得到当<span class="arithmatex">\(\epsilon \to 0\)</span>时，em的解就是kmeans的解</p>
+<h2 id="94-the-em-algorithm-in-general">9.4. The EM Algorithm in General<a class="headerlink" href="#94-the-em-algorithm-in-general" title="Permanent link">¶</a></h2>
+<p>(proof that the EM algorithm indeed maximize the likelihood function)</p>
+<p>我们的目标是maximize
+<img alt="" src="Pasted%20image%2020210502102258.png"/></p>
+<p>假设p(X|θ)难算，但是complete-data likelihood function p(X, Z|θ)很简单
+我们引入q(Z)作为Z的分布，然后可以看到对于任意的q(Z)，都有
+<img alt="" src="Pasted%20image%2020210502102808.png"/>
+因为有：
+<img alt="" src="Pasted%20image%2020210502103517.png"/></p>
+<p>这里的KL散度可以理解为：用p(Z|X,θ)近似q(Z)带来的熵增
+L(q,θ)则是一个q的functional，也是一个θ的function</p>
+<p>因为KL(q||p)&gt;=0,所以L(q, θ)&lt;=ln p(X|θ)
+也就是说<strong>L(q, θ)是ln p(X|θ)的lower bound</strong>
+<img alt="" src="Pasted%20image%2020210502105420.png"/>
+在E-step中，我们固定住<span class="arithmatex">\(\theta^{old}\)</span>，关于q(Z)maxmize L(q, θ).因为p(X|θ)和q(Z)没关系，所以L(q, θ)能一直取到上限，也就是KL散度为0，q(Z)=p(Z|X,θ)的情况。<strong>In this case, the lower bound will equal the log likelihood</strong>
+<img alt="" src="Pasted%20image%2020210502105611.png"/></p>
+<p>在M-step中，我们固定住q(Z)，关于θ对L(q, θ)最大化，从而得到<span class="arithmatex">\(\theta^{new}\)</span>
+此时lower bound L会变大，也就导致整个log likelihood变大
+注意此时q(Z)不再等于p(Z|X,θ)，因为θ已经更新了，所以KL大于0(这里讨论的都是还没有收敛的情况)。<strong>The increase in the log likelihood function is therefore greater than the increase in the lower bound</strong>
+<img alt="" src="Pasted%20image%2020210502110251.png"/>
+我们可以把<span class="arithmatex">\(q(Z)=p(Z|X,\theta^{old})\)</span>代入L的定义式，得到
+<img alt="" src="Pasted%20image%2020210502110435.png"/>
+(因为之前在GMM中我们已经定义过近似的complete log likelihood为)
+<img alt="" src="Pasted%20image%2020210502110718.png"/>
+再观察，在上面M-step中，θ只出现在ln内部，因此在joint p(X, Z|θ)为exponential family的情况下，计算就会比直接算p(X|θ)简单</p>
+<hr/>
+<p>用EM做MAP：p(θ|X)，其中设定prior p(θ)
+和之前一样，我们先把我们的目标转换成joint
+<img alt="" src="Pasted%20image%2020210502112053.png"/></p>
+<p>然后和之前一样，我们同样把KL散度拆出来，因为我们已知它是非负的：
+<img alt="" src="Pasted%20image%2020210502112221.png"/>
+where ln p(X) is a constant.
+此时对这个式子进行EM，
+在E-step中，对q优化的式子与之前一样
+在M-step中，对θ优化的过程不变，只是在式子中多了一项lnp(θ)</p>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../../assets/javascripts/bundle.51198bba.min.js"></script>
+<script src="../../../javascripts/mathjax.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</body>
+</html>
